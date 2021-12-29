@@ -96,8 +96,8 @@ export default {
         return;
       }
       const client = algoliasearch(
-        "1K06LV6AVV",
-        "ad8c4813da30000629dae46a575bebde"
+        "...",
+        "..."
       );
       const index = client.initIndex("poptabs");
 
