@@ -3,7 +3,7 @@
     <div class="container p-0 shadow-lg rounded-3 mt-4" style="height: 500px">
       <form class="px-5 pt-5">
         <div class="">
-          <p class="fs-4">Looks like there's no tab for this song</p>
+          <p class="fs-4">Looks like there's no tab for this song!</p>
           <p class="fs-4">Want to upload one?</p>
           <div class="mb-3" style="">
             <label for="formFile" class="form-label"

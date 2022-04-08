@@ -72,6 +72,7 @@
 <script>
 import * as spotify from "../../spotify.js";
 import algoliasearch from "algoliasearch";
+import * as Realm from "realm-web";
 
 export default {
   name: "search",
@@ -91,6 +92,14 @@ export default {
       this.spotifySearchResults = [];
     },
     async search() {
+      if (this.searchQuery.length > 0) {
+        const app = new Realm.App({ id: "boptabs-wwrqq" });
+        const credentials = Realm.Credentials.anonymous();
+        const user = await app.logIn(credentials);
+        const mongoResults = await user.functions.search(this.searchQuery);
+        console.log(mongoResults);
+      }
+
       if (this.searchQuery == "") {
         this.algoliaSearchResults = [];
         this.spotifySearchResults = [];
