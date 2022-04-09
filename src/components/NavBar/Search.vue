@@ -14,7 +14,6 @@
         v-model="searchQuery"
         style="width: 400px"
       />
-      <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
     </form>
 
     <ul
@@ -29,7 +28,7 @@
       "
     >
       <li
-        v-for="track in algoliaSearchResults"
+        v-for="track in mongoSearchResults"
         :key="track.spotifyId"
         v-on:click="clearSearch"
         class="list-group-item d-flex justify-content-between align-items-start"
@@ -64,14 +63,13 @@
           </div>
           {{ track.artists.map((artist) => artist.name).join(", ") }}
         </div>
-        <span class="badge bg-primary rounded-pill">Not Tabbed</span>
+        <span class="badge bg-secondary rounded-pill">Not Tabbed</span>
       </li>
     </ul>
   </div>
 </template>
 <script>
 import * as spotify from "../../spotify.js";
-import algoliasearch from "algoliasearch";
 import * as Realm from "realm-web";
 
 export default {
@@ -79,60 +77,43 @@ export default {
   props: {},
   data() {
     return {
-      algoliaSearchResults: [],
+      mongoSearchResults: [],
       spotifySearchResults: [],
       searchQuery: "",
+      user: null,
     };
   },
-  async created() {},
+  async created() {
+    const app = new Realm.App({ id: "boptabs-wwrqq" });
+    const credentials = Realm.Credentials.anonymous();
+    const user = await app.logIn(credentials);
+    this.user = user;
+  },
   methods: {
     clearSearch() {
       this.searchQuery = "";
-      this.algoliaSearchResults = [];
+      this.mongoSearchResults = [];
       this.spotifySearchResults = [];
     },
     async search() {
-      if (this.searchQuery.length > 0) {
-        const app = new Realm.App({ id: "boptabs-wwrqq" });
-        const credentials = Realm.Credentials.anonymous();
-        const user = await app.logIn(credentials);
-        const mongoResults = await user.functions.search(this.searchQuery);
-        console.log(mongoResults);
-      }
-
       if (this.searchQuery == "") {
-        this.algoliaSearchResults = [];
+        this.mongoSearchResults = [];
         this.spotifySearchResults = [];
         return;
       }
-      this.algoliaSearchResults = [];
+
+      const mongoSearchResults = await this.user.functions.search(
+        this.searchQuery
+      );
+
+      console.log(mongoSearchResults);
+
+      this.mongoSearchResults = [];
       this.spotifySearchResults = [];
 
-      const client = algoliasearch(
-        "1K06LV6AVV",
-        "ad8c4813da30000629dae46a575bebde"
-      );
-      const index = client.initIndex("poptabs");
+      this.mongoSearchResults = mongoSearchResults;
 
-      let algoliaSearchResults = await index.search(this.searchQuery, {
-        getRankingInfo: true,
-        analytics: false,
-        enableABTest: false,
-        hitsPerPage: 4,
-        attributesToRetrieve: "*",
-        attributesToSnippet: "*:20",
-        snippetEllipsisText: "…",
-        responseFields: "*",
-        explain: "*",
-        page: 0,
-        facets: ["*"],
-      });
-
-      console.log(algoliaSearchResults);
-
-      this.algoliaSearchResults = algoliaSearchResults.hits;
-
-      if (algoliaSearchResults.hits.length < 4) {
+      if (mongoSearchResults.length < 4) {
         let spotifySearchResults = await spotify.search(
           this.searchQuery,
           ["track"],
@@ -143,14 +124,14 @@ export default {
         // remove songs from Spotify that are in Algolia results
         spotifySearchResults.tracks.items =
           spotifySearchResults.tracks.items.filter((track) => {
-            return !algoliaSearchResults.hits
+            return !mongoSearchResults
               .map((track) => track.spotifyId)
               .includes(track.id);
           });
 
         this.spotifySearchResults = spotifySearchResults.tracks.items.slice(
           0,
-          4 - algoliaSearchResults.hits.length
+          4 - mongoSearchResults.length
         );
         console.log(spotifySearchResults);
       }

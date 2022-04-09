@@ -19,9 +19,7 @@
             />
           </div>
         </div>
-        <button type="submit" class="btn btn-primary" v-on:click="postFile()">
-          Upload
-        </button>
+        <button class="btn btn-primary" v-on:click="postFile()">Upload</button>
       </form>
     </div>
   </div>
@@ -31,7 +29,8 @@
 
 
 <script>
-// import * as mongodb from "../mongodb.js";
+import * as Realm from "realm-web";
+
 export default {
   name: "Add",
   computed: {
@@ -40,17 +39,30 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      user: null,
+    };
   },
   async created() {
-    // console.log(await mongodb.findOne({ spotifyId: "7ytR5pFWmSjzHJIgog4" }));
+    const app = new Realm.App({ id: "boptabs-wwrqq" });
+    const credentials = Realm.Credentials.anonymous();
+    const user = await app.logIn(credentials);
+    this.user = user;
   },
   methods: {
     async postFile() {
       const file = this.$refs.file.files[0];
-      let formData = new FormData();
-      formData.append("file", file);
-      formData.forEach((file) => console.log(file));
+      let xml = await file.text();
+      let track = JSON.parse(JSON.stringify(this.currentTrack));
+
+      let document = {
+        name: track.name,
+        primaryArtist: track.artists.map((artist) => artist.name).join(", "),
+        spotifyId: track.id,
+        musicXml: xml,
+      };
+
+      await this.user.functions.addMusicXml(document);
     },
   },
 };
