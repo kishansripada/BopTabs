@@ -17,6 +17,7 @@
     </form>
 
     <ul
+      v-if="searchQuery"
       style="
         z-index: 1000;
         position: absolute;

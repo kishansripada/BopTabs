@@ -26,8 +26,6 @@
 </template>
 
 
-
-
 <script>
 import * as Realm from "realm-web";
 
