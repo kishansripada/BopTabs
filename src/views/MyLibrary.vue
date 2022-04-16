@@ -1,9 +1,19 @@
 <template>
-  <div>
-    <p class="fs-1 container mt-3">Tabbed Tracks</p>
+  <div class="container">
+    <div class="d-flex">
+      <p class="fs-1 mt-3" style="">Tabbed Tracks</p>
 
-    <div class="list-group container" style="width: auto">
-      <div v-for="track in savedTracksTabbed" :key="track.track.id">
+      <button
+        type="button"
+        class="btn btn-dark ms-auto align-self-center"
+        v-on:click="getUserSavedTracks()"
+      >
+        Refresh
+      </button>
+    </div>
+
+    <div class="list-group" style="width: auto">
+      <div v-for="track in tabbedSavedTracks" :key="track.track.id">
         <router-link
           style="text-decoration: none; color: black"
           :to="`/track/${track.track.id}/tabs`"
@@ -40,7 +50,7 @@
 <script>
 import WebPlayback from "@/components/WebPlayback.vue";
 import * as spotify from "../spotify.js";
-import algoliasearch from "algoliasearch";
+import * as Realm from "realm-web";
 
 export default {
   name: "MyLibrary",
@@ -49,84 +59,61 @@ export default {
   },
   data() {
     return {
-      savedTracksTabbed: [],
-      savedTracksNotTabbed: [],
+      tabbedSavedTracks: [],
+      loading: false,
+      user: null,
     };
   },
   computed: {},
 
   methods: {
     async getUserSavedTracks() {
-      function chunk(array, chunkSize) {
-        return [].concat.apply(
-          [],
-          array.map(function (elem, i) {
-            return i % chunkSize ? [] : [array.slice(i, i + chunkSize)];
-          })
-        );
-      }
+      // this.loading = true;
 
-      //  get saved tracks from spotify
-      let savedTracks = (
+      //  get list of saved tracks from spotify
+      let spotifySavedTracks = (
         await spotify.getUserSavedTracks(
           JSON.parse(localStorage.token).access_token
         )
       ).items;
 
-      const client = algoliasearch(
-        "1K06LV6AVV",
-        "ad8c4813da30000629dae46a575bebde"
+      // send list of saved track spotify ids to mongodb and return the ones that are tabbed
+      let mongoSearchResults = await this.user.functions.matchSavedTracks(
+        spotifySavedTracks.map((track) => track.track.id)
       );
 
-      let groupsOfQueries = chunk(savedTracks, 50).map((chunk) =>
-        chunk.map((track) => {
-          return {
-            indexName: "poptabs",
-            query: track.track.id,
-            params: {
-              hitsPerPage: 1,
-              restrictSearchableAttributes: ["spotifyId"],
-            },
-          };
-        })
-      );
+      console.log({ spotifySavedTracks });
+      console.log({ mongoSearchResults });
 
-      let hits = await Promise.all(
-        groupsOfQueries.map((queries) => client.multipleQueries(queries))
-      );
-
-      hits = hits.map((hit) => hit.results).flat();
-
-      // attack isTab property to saved tracks
-      for (let i = 0; i < savedTracks.length; i++) {
-        savedTracks[i].track.isTabbed = Boolean(hits[i].nbHits);
-      }
-
-      let savedTracksTabbed = [];
-      let savedTracksNotTabbed = [];
-
-      savedTracks.forEach((track) => {
-        if (track.track.isTabbed) {
-          savedTracksTabbed.push(track);
-        } else {
-          savedTracksNotTabbed.push(track);
-        }
+      // filter spotify saved tracks to only include those that are on mongodb
+      let tabbedSavedTracks = spotifySavedTracks.filter((track) => {
+        return mongoSearchResults
+          .map((track) => track.spotifyId)
+          .includes(track.track.id);
       });
-      this.savedTracksTabbed = savedTracksTabbed;
-      this.savedTracksNotTabbed = savedTracksNotTabbed;
 
-      localStorage.savedTracksTabbed = JSON.stringify(savedTracksTabbed);
-      localStorage.savedTracksNotTabbed = JSON.stringify(savedTracksNotTabbed);
+      // push it to data variable
+      this.tabbedSavedTracks = tabbedSavedTracks;
+      // push it to local storage
+      localStorage.tabbedSavedTracks = JSON.stringify(tabbedSavedTracks);
     },
   },
   async created() {
+    /////////////create mongo db client
+    const app = new Realm.App({ id: "boptabs-wwrqq" });
+    const credentials = Realm.Credentials.anonymous();
+    const user = await app.logIn(credentials);
+    this.user = user;
+    /////////////create mongo db client
+
+    // create spotify token (non-user specific)
     await this.$store.dispatch("setCurrentToken");
+
     if (
-      localStorage.savedTracksTabbed &&
-      JSON.parse(localStorage.savedTracksTabbed).length
+      localStorage.tabbedSavedTracks &&
+      JSON.parse(localStorage.tabbedSavedTracks).length
     ) {
-      this.savedTracksTabbed = JSON.parse(localStorage.savedTracksTabbed);
-      this.savedTracksNotTabbed = JSON.parse(localStorage.savedTracksNotTabbed);
+      this.tabbedSavedTracks = JSON.parse(localStorage.tabbedSavedTracks);
     } else {
       this.getUserSavedTracks();
     }
