@@ -97,23 +97,24 @@ export default {
       this.spotifySearchResults = [];
     },
     async search() {
-      if (this.searchQuery == "") {
+      if (this.searchQuery.length < 3) {
         this.mongoSearchResults = [];
         this.spotifySearchResults = [];
         return;
       }
 
+      this.mongoSearchResults = [];
+      this.spotifySearchResults = [];
       const mongoSearchResults = await this.user.functions.search(
         this.searchQuery
       );
 
-      console.log(mongoSearchResults);
-
-      this.mongoSearchResults = [];
-      this.spotifySearchResults = [];
+      console.log({ mongoSearchResults });
 
       this.mongoSearchResults = mongoSearchResults;
 
+      //////////SPOTIFY
+      // if less than 4 mongo results, get from spotify
       if (mongoSearchResults.length < 4) {
         let spotifySearchResults = await spotify.search(
           this.searchQuery,
@@ -122,19 +123,20 @@ export default {
           await this.$store.state.currentToken
         );
 
-        // remove songs from Spotify that are in Algolia results
-        spotifySearchResults.tracks.items =
-          spotifySearchResults.tracks.items.filter((track) => {
+        // remove songs from Spotify that are in mongo results
+        spotifySearchResults = spotifySearchResults.tracks.items.filter(
+          (track) => {
             return !mongoSearchResults
               .map((track) => track.spotifyId)
               .includes(track.id);
-          });
+          }
+        );
 
-        this.spotifySearchResults = spotifySearchResults.tracks.items.slice(
+        this.spotifySearchResults = spotifySearchResults.slice(
           0,
           4 - mongoSearchResults.length
         );
-        console.log(spotifySearchResults);
+        console.log({ spotifySearchResults });
       }
     },
   },

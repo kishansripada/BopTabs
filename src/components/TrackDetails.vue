@@ -147,15 +147,15 @@
       {{ currentTrack.album.release_date }}
     </p>
   </div>
-
+  <!-- 
   <div v-else class="position-relative">
     <div
       class="spinner-border position-absolute top-100 start-50 translate-middle"
       role="status"
     >
-      <span class="visually-hidden">Loading...</span>
+    <span class="position-relative">Loading...</span>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
 export default {

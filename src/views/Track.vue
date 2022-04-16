@@ -31,6 +31,8 @@
       </div>
     </div>
 
+    <TabInfo />
+
     <Flat v-if="currentTrack && currentTrack.tabs" v-show="tabs" flat />
 
     <Add v-if="tabs && currentTrack && !currentTrack.tabs" />
@@ -45,10 +47,11 @@
 </template>
 <script>
 import TrackDetails from "@/components/TrackDetails.vue";
-import Flat from "@/components/Flat.vue";
+import Flat from "@/components/Tabs/Flat.vue";
 import Chords from "@/components/Chords.vue";
 import WebPlayback from "@/components/WebPlayback.vue";
 import Add from "@/components/Add.vue";
+import TabInfo from "@/components/Tabs/TabInfo.vue";
 
 export default {
   name: "Track",
@@ -58,6 +61,8 @@ export default {
     Chords,
     WebPlayback,
     Add,
+
+    TabInfo,
   },
   data() {
     return {

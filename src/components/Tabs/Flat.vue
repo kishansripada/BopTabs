@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="container p-0 shadow-lg rounded-3 mt-4 position-relative"
+      class="container p-0 shadow-lg rounded-3 mt-2 position-relative"
       style="height: 500px"
       ref="embedContainer"
     ></div>

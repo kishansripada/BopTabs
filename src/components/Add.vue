@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container p-0 shadow-lg rounded-3 mt-4" style="height: 500px">
+    <div class="container p-0 shadow-lg rounded-3 mt-4" style="height: 200px">
       <form class="px-5 pt-5">
         <div class="">
           <p class="fs-4">Looks like there's no tab for this song!</p>
@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       user: null,
+      submitted: false,
     };
   },
   async created() {
@@ -58,9 +59,12 @@ export default {
         primaryArtist: track.artists.map((artist) => artist.name).join(", "),
         spotifyId: track.id,
         musicXml: xml,
+        approved: false,
       };
 
-      await this.user.functions.addMusicXml(document);
+      this.user.functions.addMusicXml(document).then((_) => {
+        this.submitted = true;
+      });
     },
   },
 };
