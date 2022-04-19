@@ -10,37 +10,42 @@
       alt="..."
     />
 
-    <p class="mt-4 mx-2">Kishan Sripada</p>
+    <p class="mt-4 mx-2">{{ currentTrack.tabs[tabVersion].tabber }}</p>
     <div
       class="ms-auto d-flex align-items-end flex-column mb-3"
       style="height: 200px"
     >
       <div class="p-3">2020-08-07</div>
-      <div class="px-3">Flex item</div>
-      <div class="dropdown mt-auto p-3">
-        <a
-          class="btn dropdown-toggle"
-          href="#"
-          role="button"
-          id="dropdownMenuLink"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          Choose Version
-        </a>
+      <div class="px-3">dfsdfd</div>
 
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <li><a class="dropdown-item" href="#">Version 1</a></li>
-          <li><a class="dropdown-item" href="#">Version 2</a></li>
-          <li><a class="dropdown-item" href="#">Version 3</a></li>
-        </ul>
-      </div>
+      <select
+        class="form-select mt-auto p-3"
+        v-if="currentTrack"
+        v-model="tabVersion"
+      >
+        <option
+          v-for="(tab, index) in this.currentTrack.tabs"
+          :key="index"
+          :value="index"
+        >
+          Version {{ index + 1 }}
+        </option>
+      </select>
     </div>
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
+import { mapFields } from "vuex-map-fields";
+
 export default {
   name: "TabInfo",
-  computed: {},
+  data() {
+    return {};
+  },
+  computed: {
+    ...mapState(["currentTrack"]),
+    ...mapFields(["tabVersion"]),
+  },
 };
 </script>

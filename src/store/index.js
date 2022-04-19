@@ -2,6 +2,8 @@ import { createStore } from "vuex";
 import * as spotify from "../spotify.js";
 import * as Realm from "realm-web";
 
+import { getField, updateField } from "vuex-map-fields";
+
 export default createStore({
    state: {
       currentToken: null,
@@ -10,6 +12,7 @@ export default createStore({
       flatCondition: "paused",
       spotifyPosition: null,
       chordPosition: null,
+      tabVersion: 0,
    },
    mutations: {
       setCurrentToken(state, token) {
@@ -21,15 +24,12 @@ export default createStore({
       setSpotifyCondition(state, condition) {
          state.spotifyCondition = condition;
       },
-      setFlatCondition(state, condition) {
-         state.flatCondition = condition;
-      },
-      setSpotifyPosition(state, position) {
-         state.spotifyPosition = position;
-      },
+
       setChordPosition(state, position) {
          state.chordPosition = position;
       },
+
+      updateField,
    },
    actions: {
       async setCurrentToken(state) {
@@ -48,10 +48,10 @@ export default createStore({
          const app = new Realm.App({ id: "boptabs-wwrqq" });
          const credentials = Realm.Credentials.anonymous();
          const user = await app.logIn(credentials);
-         const musicXml = await user.functions.getMusicXml(track.id);
+         const mongoTrack = await user.functions.getTrack(track.id);
 
-         if (musicXml !== null) {
-            track.tabs = musicXml.musicXml;
+         if (mongoTrack !== null) {
+            track.tabs = mongoTrack.tabs;
             console.log("tabs in database");
          }
          console.log(track);
@@ -59,5 +59,7 @@ export default createStore({
       },
    },
    modules: {},
-   getters: {},
+   getters: {
+      getField,
+   },
 });

@@ -14,6 +14,7 @@ export default {
   name: "flat",
 
   computed: {},
+  methods: {},
   async created() {},
   async mounted() {
     var container = this.$refs.embedContainer;
@@ -24,23 +25,27 @@ export default {
       },
     });
 
-    embed.loadMusicXML(this.$store.state.currentTrack.tabs);
-    embed.on("play", () => {
-      console.log("flat playing");
-      this.$store.commit("setFlatCondition", "playing");
-    });
-    embed.on("pause", () => {
-      console.log("flat paused");
-      this.$store.commit("setFlatCondition", "paused");
-    });
-    // embed.on("playbackPosition", function (position) {
-    //   console.log(position);
-    // });
+    embed.loadMusicXML(this.$store.state.currentTrack.tabs[0].musicXml);
+
     this.$watch(
       () => this.$store.state.currentTrack,
       async () => {
+        embed.stop();
         if (this.$store.state.currentTrack.tabs) {
-          embed.loadMusicXML(this.$store.state.currentTrack.tabs);
+          embed.loadMusicXML(this.$store.state.currentTrack.tabs[0].musicXml);
+        }
+      }
+    );
+    this.$watch(
+      () => this.$store.state.tabVersion,
+      async () => {
+        console.log("version changed");
+        if (this.$store.state.currentTrack.tabs) {
+          embed.stop();
+          embed.loadMusicXML(
+            this.$store.state.currentTrack.tabs[this.$store.state.tabVersion]
+              .musicXml
+          );
         }
       }
     );

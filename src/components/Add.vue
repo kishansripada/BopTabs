@@ -1,26 +1,26 @@
 <template>
-  <div>
-    <div class="container p-0 shadow-lg rounded-3 mt-4" style="height: 200px">
-      <form class="px-5 pt-5">
-        <div class="">
-          <p class="fs-4">Looks like there's no tab for this song!</p>
-          <p class="fs-4">Want to upload one?</p>
-          <div class="mb-3" style="">
-            <label for="formFile" class="form-label"
-              >Upload a MusicXML file:</label
-            >
-            <input
-              class="form-control"
-              type="file"
-              ref="file"
-              id="formFile"
-              style="width: 500px"
-              accept=".xml"
-            />
-          </div>
-        </div>
-        <button class="btn btn-primary" v-on:click="postFile()">Upload</button>
-      </form>
+  <div class="p-0 shadow-lg rounded-3 mt-4 container-sm" style="height: 200px">
+    <div class="ps-3 pt-3">
+      <label class="form-label" v-if="currentTrack">
+        Contribute to Bop Tabs by uploading your own version of
+        {{ currentTrack.name }}!</label
+      >
+      <input
+        class="form-control mb-2"
+        type="file"
+        ref="file"
+        id="formFile"
+        style="width: 500px"
+        accept=".xml"
+      />
+      <input
+        class="form-control"
+        type="text"
+        placeholder="Description of your version"
+        aria-label="default input example"
+        v-model="description"
+      />
+      <button class="btn btn-primary" v-on:click="postFile()">Upload</button>
     </div>
   </div>
 </template>
@@ -28,18 +28,18 @@
 
 <script>
 import * as Realm from "realm-web";
-
+import { mapState } from "vuex";
+import { mapFields } from "vuex-map-fields";
 export default {
   name: "Add",
   computed: {
-    currentTrack() {
-      return this.$store.state.currentTrack;
-    },
+    ...mapState(["currentTrack"]),
   },
   data() {
     return {
       user: null,
       submitted: false,
+      description: "",
     };
   },
   async created() {
@@ -54,17 +54,34 @@ export default {
       let xml = await file.text();
       let track = JSON.parse(JSON.stringify(this.currentTrack));
 
-      let document = {
-        name: track.name,
-        primaryArtist: track.artists.map((artist) => artist.name).join(", "),
-        spotifyId: track.id,
-        musicXml: xml,
-        approved: false,
-      };
+      if (track.tabs) {
+        // if track exists
+        this.user.functions.addNewMusicXml(track.id, {
+          approved: false,
+          musicXml: xml,
+          rating: null,
+          tabber: JSON.parse(localStorage.token).user.id,
+          description: this.description,
+        });
+      } else {
+        // if track doesn't exist
+        let document = {
+          name: track.name,
+          primaryArtist: track.artists.map((artist) => artist.name).join(", "),
+          spotifyId: track.id,
+          tabs: [
+            {
+              approved: false,
+              musicXml: xml,
+              rating: null,
+              tabber: JSON.parse(localStorage.token).user.id,
+              description: this.description,
+            },
+          ],
+        };
 
-      this.user.functions.addMusicXml(document).then((_) => {
-        this.submitted = true;
-      });
+        this.user.functions.addMusicXml(document);
+      }
     },
   },
 };

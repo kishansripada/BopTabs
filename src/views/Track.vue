@@ -31,11 +31,11 @@
       </div>
     </div>
 
-    <TabInfo />
+    <TabInfo v-if="currentTrack && currentTrack.tabs" />
 
     <Flat v-if="currentTrack && currentTrack.tabs" v-show="tabs" flat />
 
-    <Add v-if="tabs && currentTrack && !currentTrack.tabs" />
+    <Add />
 
     <Chords
       v-if="currentTrack && currentTrack.trackAnalysis"
