@@ -1,19 +1,5 @@
-# poptabs3
+# Bop Tabs
 
-## Project setup
-```
-npm install
-```
+A music note management website allowing users to submit interactive tablatures of their favorite songs.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Powered by the Spotify API and Flat.io
