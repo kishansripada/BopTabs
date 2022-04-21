@@ -142,9 +142,6 @@ export default {
   components: {
     Search,
   },
-  props: {
-    msg: String,
-  },
   data() {
     return {
       loggedIn: null,
