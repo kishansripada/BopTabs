@@ -15,6 +15,7 @@ export default createStore({
       tabVersion: 0,
    },
    mutations: {
+      updateField,
       setCurrentToken(state, token) {
          state.currentToken = token;
       },
@@ -24,12 +25,12 @@ export default createStore({
       setSpotifyCondition(state, condition) {
          state.spotifyCondition = condition;
       },
-
+      setSpotifyPosition(state, position) {
+         state.spotifyPosition = position;
+      },
       setChordPosition(state, position) {
          state.chordPosition = position;
       },
-
-      updateField,
    },
    actions: {
       async setCurrentToken(state) {
@@ -37,25 +38,30 @@ export default createStore({
          state.commit("setCurrentToken", token.access_token);
       },
       async setCurrentTrack({ commit, state }, id) {
-         let track = await spotify.getTrack(id, state.currentToken);
-
-         track.trackAnalysis = await spotify.getTrackAnalysis(id, state.currentToken);
-         track.artists = await spotify.getArtists(
-            track.artists.slice(0, 3).map((artist) => artist.id),
-            state.currentToken
-         );
-
          const app = new Realm.App({ id: "boptabs-wwrqq" });
          const credentials = Realm.Credentials.anonymous();
          const user = await app.logIn(credentials);
-         const mongoTrack = await user.functions.getTrack(track.id);
+         let mongoTrack = user.functions.getTrack(id);
 
-         if (mongoTrack !== null) {
-            track.tabs = mongoTrack.tabs;
-            console.log("tabs in database");
-         }
-         console.log(track);
-         commit("setCurrentTrack", track);
+         let track = spotify.getTrack(id, state.currentToken);
+
+         let artists = spotify.getArtists(
+            (await track).artists.slice(0, 3).map((artist) => artist.id),
+            state.currentToken
+         );
+
+         let trackAnalysis = spotify.getTrackAnalysis(id, state.currentToken);
+
+         Promise.all([track, trackAnalysis, artists, mongoTrack]).then((arr) => {
+            track = {
+               ...arr[0],
+               trackAnalysis: { ...arr[1], bars: arr[1].bars.reverse() },
+               artists: arr[2],
+               tabs: arr[3]?.tabs,
+            };
+            console.log(track);
+            commit("setCurrentTrack", track);
+         });
       },
    },
    modules: {},

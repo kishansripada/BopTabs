@@ -1,8 +1,8 @@
 <template>
   <button>
     <img
+      @click="togglePlay"
       v-if="premium"
-      ref="togglePlay"
       style="
         position: fixed;
         width: 50px;
@@ -10,32 +10,40 @@
         right: 50%;
         margin-right: -25px;
       "
-      :src="imgUrl"
+      :src="toggleImgUrl"
     />
   </button>
 </template>
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "WebPlayback1",
 
   data() {
     return {
       signedIn: false,
-      premium: null,
-      imgUrl:
-        "https://raw.githubusercontent.com/kishansripada/BopTabs/main/src/assets/play.svg",
+      premium: Boolean(
+        JSON.parse(localStorage.token).user.product == "premium"
+      ),
+      player: null,
+      play: null,
     };
   },
+  computed: {
+    ...mapState(["currentTrack", "chordPosition", "spotifyCondition"]),
+    toggleImgUrl() {
+      if (!this.spotifyCondition || this.spotifyCondition == "paused") {
+        return "https://raw.githubusercontent.com/kishansripada/BopTabs/main/src/assets/play.svg";
+      } else {
+        return "https://raw.githubusercontent.com/kishansripada/BopTabs/master/src/assets/pause.svg";
+      }
+    },
+  },
   async created() {
-    this.$store.commit("setSpotifyCondition", null);
-    this.premium = Boolean(
-      JSON.parse(localStorage.token).user.product == "premium"
-    );
-    if (
-      localStorage.token &&
-      JSON.parse(localStorage.token).user.product == "premium"
-    ) {
-      this.premium == true;
+    if (this.premium) {
+      this.$store.commit("setSpotifyCondition", null);
+      this.$store.commit("setSpotifyPosition", null);
       var scriptTag = document.createElement("script");
       scriptTag.src = "https://sdk.scdn.co/spotify-player.js";
       scriptTag.async = true;
@@ -43,7 +51,7 @@ export default {
       document.getElementsByTagName("head")[0].appendChild(scriptTag);
 
       window.onSpotifyWebPlaybackSDKReady = () => {
-        const player = new window.Spotify.Player({
+        this.player = new window.Spotify.Player({
           name: "Bop Tabs",
           getOAuthToken: (cb) => {
             cb(JSON.parse(localStorage.token).access_token);
@@ -51,18 +59,11 @@ export default {
           volume: 0.5,
         });
 
-        // player.addListener(
-        //   "player_state_changed",
-        //   ({ position, duration, track_window: { current_track } }) => {
-        //     console.log(position);
-        //   }
-        // );
-
         // Called when connected to the player created beforehand successfully
-        player.addListener("ready", ({ device_id }) => {
+        this.player.addListener("ready", ({ device_id }) => {
           console.log("Ready with Device ID", device_id);
 
-          let play = ({
+          this.play = ({
             spotify_uri,
             playerInstance: {
               _options: { getOAuthToken, id },
@@ -85,49 +86,46 @@ export default {
 
           let interval = window.setInterval(() => {
             console.log("checked state");
-            player.getCurrentState().then((state) => {
+            this.player.getCurrentState().then((state) => {
               if (state && !state.paused) {
                 this.$store.commit("setSpotifyPosition", state.position);
               }
             });
           }, 50);
-
-          this.$refs.togglePlay.onclick = () => {
-            if (!this.$store.state.spotifyCondition) {
-              play({
-                playerInstance: player,
-                spotify_uri: `spotify:track:${this.$store.state.currentTrack.id}`,
-              });
-              this.$store.commit("setSpotifyCondition", "playing");
-            } else {
-              player.togglePlay();
-            }
-          };
-
-          this.$watch(
-            () => this.$store.state.currentTrack,
-            async () => {
-              player.pause();
-            }
-          );
-
-          this.$watch(
-            () => this.$store.state.chordPosition,
-            async () => {
-              player.seek(this.$store.state.chordPosition * 1000).then(() => {
-                console.log("Changed position!");
-              });
-            }
-          );
         });
 
-        // Connect to the player created beforehand, this is equivalent to
-        // creating a new device which will be visible for Spotify Connect
-        player.connect();
+        this.player.connect();
       };
     }
   },
-  methods: {},
+  methods: {
+    togglePlay() {
+      if (!this.$store.state.spotifyCondition) {
+        this.play({
+          playerInstance: this.player,
+          spotify_uri: `spotify:track:${this.currentTrack.id}`,
+        });
+        this.$store.commit("setSpotifyCondition", "playing");
+      } else {
+        if (this.spotifyCondition == "playing") {
+          this.$store.commit("setSpotifyCondition", "paused");
+        } else {
+          this.$store.commit("setSpotifyCondition", "playing");
+        }
+        this.player.togglePlay();
+      }
+    },
+  },
+  watch: {
+    currentTrack() {
+      this.player.pause();
+    },
+    chordPosition() {
+      this.player.seek(this.$store.state.chordPosition * 1000).then(() => {
+        console.log("Changed position!");
+      });
+    },
+  },
 };
 </script>
 

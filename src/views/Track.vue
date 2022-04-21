@@ -8,44 +8,44 @@
         aria-label="Basic radio toggle button group"
       >
         <input
-          v-on:click="tabsClicked"
-          v-bind="tabs"
           type="radio"
           class="btn-check"
-          name="btnradio"
           id="btnradio1"
-          :checked="tabs"
+          :checked="tabsOrChords == `tabs`"
+          value="tabs"
+          v-model="tabsOrChords"
         />
         <label class="btn btn-outline-primary" for="btnradio1">Tabs</label>
 
         <input
-          v-on:click="chordsClicked"
-          v-bind="chords"
           type="radio"
           class="btn-check"
-          name="btnradio"
           id="btnradio3"
-          :checked="chords"
+          value="chords"
+          :checked="tabsOrChords == `chords`"
+          v-model="tabsOrChords"
         />
         <label class="btn btn-outline-primary" for="btnradio3">Chords</label>
       </div>
     </div>
 
-    <TabInfo v-if="currentTrack && currentTrack.tabs" />
+    <TabInfo v-if="currentTrack?.tabs" />
 
-    <Flat v-if="currentTrack && currentTrack.tabs" v-show="tabs" flat />
+    <Flat v-if="currentTrack?.tabs" v-show="tabsOrChords == `tabs`" flat />
 
     <Add />
 
     <Chords
-      v-if="currentTrack && currentTrack.trackAnalysis"
-      v-show="chords"
+      v-if="currentTrack?.trackAnalysis"
+      v-show="tabsOrChords == `chords`"
       Chords
     />
     <WebPlayback />
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
+import { mapFields } from "vuex-map-fields";
 import TrackDetails from "@/components/TrackDetails.vue";
 import Flat from "@/components/Tabs/Flat.vue";
 import Chords from "@/components/Chords.vue";
@@ -61,47 +61,21 @@ export default {
     Chords,
     WebPlayback,
     Add,
-
     TabInfo,
   },
   data() {
     return {
-      tabs: this.$route.params.type == "tabs",
-      chords: this.$route.params.type == "chords",
+      tabsOrChords: "tabs",
     };
   },
   computed: {
-    currentTrack() {
-      return this.$store.state.currentTrack;
-    },
+    ...mapState(["currentTrack"]),
   },
 
-  methods: {
-    async tabsClicked() {
-      this.tabs = true;
-      this.chords = false;
-      this.$router.push({
-        path: `/track/${this.$route.params.id}/tabs`,
-      });
-    },
-    async chordsClicked() {
-      this.chords = true;
-      this.tabs = false;
-      this.$router.push({
-        path: `/track/${this.$route.params.id}/chords`,
-      });
-    },
-  },
+  methods: {},
   async created() {
-    await this.$store.dispatch("setCurrentToken");
-    await this.$store.dispatch("setCurrentTrack", this.$route.params.id);
-    this.$watch(
-      () => this.$route.params.type,
-      async () => {
-        this.tabs = this.$route.params.type == "tabs";
-        this.chords = this.$route.params.type == "chords";
-      }
-    );
+    this.$store.dispatch("setCurrentToken");
+    this.$store.dispatch("setCurrentTrack", this.$route.params.id);
 
     this.$watch(
       () => this.$route.params.id,

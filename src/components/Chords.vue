@@ -33,29 +33,25 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import { mapFields } from "vuex-map-fields";
 export default {
   name: "Chords",
   computed: {
-    currentTrack() {
-      return this.$store.state.currentTrack;
+    ...mapState(["currentTrack", "spotifyPosition"]),
+    currentBar() {
+      return this.currentTrack.trackAnalysis.beats.findIndex((beat) => {
+        return this.spotifyPosition / 1000 < beat.start;
+      });
     },
   },
   data() {
-    return {
-      currentBar: null,
-    };
+    return {};
   },
   async created() {
-    this.$watch(
-      () => this.$store.state.spotifyPosition,
-      async () => {
-        this.currentBar = this.currentTrack.trackAnalysis.beats.findIndex(
-          (beat) => {
-            return (
-              this.$store.state.spotifyPosition / 1000 < beat.start // + beat.duration / 2
-            );
-          }
-        );
+    this.currentBar = this.currentTrack.trackAnalysis.beats.findIndex(
+      (beat) => {
+        return this.spotifyPosition / 1000 < beat.start;
       }
     );
   },
