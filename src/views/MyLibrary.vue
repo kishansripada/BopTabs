@@ -107,7 +107,7 @@ export default {
     /////////////create mongo db client
 
     // create spotify token (non-user specific)
-    await this.$store.dispatch("setCurrentToken");
+    // await this.$store.dispatch("setCurrentToken");
 
     if (
       localStorage.tabbedSavedTracks &&

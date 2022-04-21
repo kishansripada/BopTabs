@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TrackDetails TrackDetails />
+    <TrackDetails v-if="currentTrack" TrackDetails />
     <div class="mt-4 container text-center">
       <div
         class="btn-group"
@@ -40,7 +40,7 @@
       v-show="tabsOrChords == `chords`"
       Chords
     />
-    <WebPlayback />
+    <WebPlayback v-if="loggedIn" />
   </div>
 </template>
 <script>
@@ -70,6 +70,9 @@ export default {
   },
   computed: {
     ...mapState(["currentTrack"]),
+    loggedIn() {
+      return Boolean(localStorage.token);
+    },
   },
 
   methods: {},

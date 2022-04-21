@@ -25,22 +25,6 @@ export default {
   components: {
     // navBar
   },
-  async created() {
-    await this.$store.dispatch("setCurrentToken");
-
-    let uri = window.location.search.substring(1);
-    let params = new URLSearchParams(uri);
-    if (params.get("code")) {
-      let code = params.get("code");
-      console.log(code);
-      let token = await spotify.getAuthToken(code);
-      console.log(token);
-      if (token.access_token) {
-        localStorage.token = JSON.stringify(token);
-        window.location.href = window.location.origin;
-        //    console.log(JSON.parse(localStorage.token))
-      }
-    }
-  },
+  async created() {},
 };
 </script>

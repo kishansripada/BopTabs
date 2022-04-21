@@ -1,13 +1,13 @@
 <template>
   <div>
     <navBar />
-    <button v-if="!isToken" v-on:click="connectSpotify">
+    <button v-if="!token" v-on:click="connectSpotify">
       <img
         style="position: fixed; width: 250px; bottom: 15px; right: 15px"
         src="../assets/connectSpotify.svg"
       />
     </button>
-    <button v-if="isToken && user" v-on:click="connectSpotify">
+    <button v-if="token && token.user" v-on:click="connectSpotify">
       <img
         style="
           position: fixed;
@@ -16,7 +16,7 @@
           right: 15px;
           border-radius: 50%;
         "
-        :src="user.images[0].url"
+        :src="token.user.images[0].url"
       />
     </button>
   </div>
@@ -28,35 +28,41 @@ import * as spotify from "../spotify.js";
 export default {
   name: "Login",
   data() {
-    return {
-      isToken: false,
-      user: null,
-    };
+    return {};
+  },
+  computed: {
+    token() {
+      return JSON.parse(localStorage.token || null);
+    },
   },
   async created() {
-    this.isToken = Boolean(localStorage.token);
+    console.log(window.location.href);
+    // AFTER LOGIN///////////////////////////////
+    await this.$store.dispatch("setCurrentToken");
 
-    if (!JSON.parse(localStorage.token).user) {
-      let access_token = JSON.parse(localStorage.token).access_token;
-      let user = await spotify.getUser(access_token);
-      this.user = user;
-
-      let localToken = JSON.parse(localStorage.token);
-      localToken.user = user;
-      localStorage.token = JSON.stringify(localToken);
-      console.log(user);
-    }
-
-    if (JSON.parse(localStorage.token).user) {
-      this.user = JSON.parse(localStorage.token).user;
-    }
-
-    this.$watch(
-      () => localStorage.token,
-      async () => {
-        this.isToken = Boolean(localStorage.token);
+    let uri = window.location.search.substring(1);
+    let params = new URLSearchParams(uri);
+    if (params.get("code")) {
+      let code = params.get("code");
+      console.log(code);
+      let token = await spotify.getAuthToken(code);
+      console.log(token);
+      if (token.access_token) {
+        localStorage.token = JSON.stringify(token);
+        window.location.href = window.location.origin;
+        //    console.log(JSON.parse(localStorage.token))
       }
-    );
+    }
+    // AFTER LOGIN///////////////////////////////
+
+    // if there is a local token, get the user and put it in local storage
+    if (this.token && !this.token.user) {
+      let user = await spotify.getUser(this.token.access_token);
+      localStorage.token = JSON.stringify({
+        ...this.token,
+        user: user,
+      });
+    }
   },
   methods: {
     async connectSpotify() {
