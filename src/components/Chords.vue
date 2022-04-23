@@ -48,13 +48,7 @@ export default {
   data() {
     return {};
   },
-  async created() {
-    this.currentBar = this.currentTrack.trackAnalysis.beats.findIndex(
-      (beat) => {
-        return this.spotifyPosition / 1000 < beat.start;
-      }
-    );
-  },
+  async created() {},
   methods: {
     changePosition(beat) {
       this.$store.commit("setChordPosition", beat.start);

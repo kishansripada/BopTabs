@@ -31,16 +31,20 @@
 
     <TabInfo v-if="currentTrack?.tabs" />
 
-    <Flat v-if="currentTrack?.tabs" v-show="tabsOrChords == `tabs`" flat />
+    <Flat
+      v-if="currentTrack && approvedTabs?.length"
+      v-show="tabsOrChords == `tabs`"
+      flat
+    />
 
-    <Add />
+    <Add v-if="currentTrack && isAdding" />
 
     <Chords
       v-if="currentTrack?.trackAnalysis"
       v-show="tabsOrChords == `chords`"
       Chords
     />
-    <WebPlayback v-if="loggedIn" />
+    <!-- <WebPlayback v-if="loggedIn" /> -->
   </div>
 </template>
 <script>
@@ -72,6 +76,12 @@ export default {
     ...mapState(["currentTrack"]),
     loggedIn() {
       return Boolean(localStorage.token);
+    },
+    approvedTabs() {
+      return this.currentTrack.tabs?.filter((tab) => tab.approved);
+    },
+    isAdding() {
+      return this.$store.state.isAdding;
     },
   },
 

@@ -13,6 +13,7 @@ export default createStore({
       spotifyPosition: null,
       chordPosition: null,
       tabVersion: 0,
+      isAdding: false,
    },
    mutations: {
       updateField,
@@ -30,6 +31,9 @@ export default createStore({
       },
       setChordPosition(state, position) {
          state.chordPosition = position;
+      },
+      setIsAdding(state, adding) {
+         state.isAdding = adding;
       },
    },
    actions: {

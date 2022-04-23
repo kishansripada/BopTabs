@@ -10,7 +10,7 @@
       alt="..."
     />
 
-    <p class="mt-4 mx-2">{{ currentTrack.tabs[tabVersion].tabber }}</p>
+    <p class="mt-4 mx-2">{{ currentTrack.tabs[tabVersion].author }}</p>
     <div
       class="ms-auto d-flex align-items-end flex-column mb-3"
       style="height: 200px"
@@ -24,7 +24,7 @@
         v-model="tabVersion"
       >
         <option
-          v-for="(tab, index) in this.currentTrack.tabs"
+          v-for="(tab, index) in approvedTabs"
           :key="index"
           :value="index"
         >
@@ -46,6 +46,9 @@ export default {
   computed: {
     ...mapState(["currentTrack"]),
     ...mapFields(["tabVersion"]),
+    approvedTabs() {
+      return this.currentTrack.tabs.filter((tab) => tab.approved);
+    },
   },
 };
 </script>

@@ -118,15 +118,15 @@
               ></a
             >
           </li>
-          <li class="nav-item" v-if="loggedIn">
-            <a class="nav-link active" aria-current="page" href="#"
-              ><router-link
-                style="text-decoration: none; color: black"
-                to="/mylibrary"
-                >My Library</router-link
-              ></a
-            >
-          </li>
+          <router-link
+            style="text-decoration: none; color: black"
+            to="/mylibrary"
+            ><li class="nav-item" v-if="loggedIn">
+              <a class="nav-link active" aria-current="page" href="#"
+                >My Library</a
+              >
+            </li></router-link
+          >
         </ul>
         <Search />
       </div>

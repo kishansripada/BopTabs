@@ -9,6 +9,7 @@
         bottom: 15px;
         right: 50%;
         margin-right: -25px;
+        z-index: 10000;
       "
       :src="toggleImgUrl"
     />
@@ -18,11 +19,10 @@
 import { mapState } from "vuex";
 
 export default {
-  name: "WebPlayback1",
+  name: "WebPlayback",
 
   data() {
     return {
-      signedIn: false,
       premium: Boolean(
         JSON.parse(localStorage.token).user.product == "premium"
       ),
@@ -122,6 +122,8 @@ export default {
   watch: {
     currentTrack() {
       this.player.pause();
+      this.$store.commit("setSpotifyCondition", null);
+      this.$store.commit("setChordPosition", null);
     },
     chordPosition() {
       this.player.seek(this.$store.state.chordPosition * 1000).then(() => {

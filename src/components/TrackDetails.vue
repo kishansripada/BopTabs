@@ -130,6 +130,12 @@
     <p class="position-absolute top-0 end-0 mt-2 me-4">
       {{ currentTrack.album.release_date }}
     </p>
+    <button
+      class="btn btn-primary me-5 ms-auto mt-auto"
+      v-on:click="showAddingPopup()"
+    >
+      Upload Your Version
+    </button>
   </div>
 </template>
 <script>
@@ -151,6 +157,11 @@ export default {
       ret += "" + mins + ":" + (secs < 10 ? "0" : "");
       ret += "" + secs;
       return ret;
+    },
+  },
+  methods: {
+    showAddingPopup() {
+      this.$store.commit("setIsAdding", true);
     },
   },
 };
