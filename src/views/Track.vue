@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <TabInfo v-if="currentTrack?.tabs" />
+    <TabInfo v-if="approvedTabs?.length" />
 
     <Flat
       v-if="currentTrack && approvedTabs?.length"
@@ -38,6 +38,8 @@
     />
 
     <Add v-if="currentTrack && isAdding" />
+
+    <NoTabs v-if="!approvedTabs?.length && tabsOrChords == `tabs`"></NoTabs>
 
     <Chords
       v-if="currentTrack?.trackAnalysis"
@@ -55,6 +57,7 @@ import Chords from "@/components/Chords.vue";
 import WebPlayback from "@/components/WebPlayback.vue";
 import Add from "@/components/Add.vue";
 import TabInfo from "@/components/Tabs/TabInfo.vue";
+import NoTabs from "@/components/Tabs/NoTabs.vue";
 
 export default {
   name: "Track",
@@ -65,6 +68,7 @@ export default {
     WebPlayback,
     Add,
     TabInfo,
+    NoTabs,
   },
   data() {
     return {
