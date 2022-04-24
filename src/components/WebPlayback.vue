@@ -121,7 +121,7 @@ export default {
   },
   watch: {
     currentTrack() {
-      this.player.pause();
+      this.player?.pause();
       this.$store.commit("setSpotifyCondition", null);
       this.$store.commit("setChordPosition", null);
     },

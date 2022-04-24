@@ -22,7 +22,13 @@ export default {
   },
   computed: {
     loggedIn() {
-      return Boolean(localStorage.token);
+      if (localStorage.token) {
+        if (JSON.parse(localStorage.token).user) {
+          return JSON.parse(localStorage.token).user;
+        }
+      } else {
+        return null;
+      }
     },
   },
 

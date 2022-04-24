@@ -1,25 +1,25 @@
 <template>
   <div
     class="container d-flex p-0 shadow-lg rounded-3 mt-4 position-relative"
-    style="height: 200px"
+    style="height: 100px"
   >
     <img
-      src="https://i.scdn.co/image/ab6775700000ee85769926cc29d872eaec8dc953"
+      :src="authorProfilePic"
       class="m-3"
-      style="border-radius: 10%; width: 100px; height: 100px"
-      alt="..."
+      style="border-radius: 10%; width: 75px; height: 75px"
     />
+    <div class="me-auto d-flex align-items-start flex-column">
+      <p class="mt-3 mx-2">{{ currentTrack.tabs[tabVersion].author }}</p>
+      <p class="mx-2">{{ currentTrack.tabs[tabVersion].description }}</p>
+    </div>
 
-    <p class="mt-4 mx-2">{{ currentTrack.tabs[tabVersion].author }}</p>
-    <div
-      class="ms-auto d-flex align-items-end flex-column mb-3"
-      style="height: 200px"
-    >
-      <div class="p-3">2020-08-07</div>
-      <div class="px-3">dfsdfd</div>
+    <div class="ms-auto d-flex align-items-end flex-column mb-3" style="">
+      <div class="p-3">
+        {{ currentTrack.tabs[tabVersion].dateSubmitted.slice(0, 10) }}
+      </div>
 
       <select
-        class="form-select mt-auto p-3"
+        class="form-select mt-auto mx-2"
         v-if="currentTrack"
         v-model="tabVersion"
       >
@@ -37,17 +37,38 @@
 <script>
 import { mapState } from "vuex";
 import { mapFields } from "vuex-map-fields";
+import * as spotify from "../../spotify.js";
 
 export default {
   name: "TabInfo",
   data() {
-    return {};
+    return {
+      authorProfilePic: null,
+    };
   },
   computed: {
-    ...mapState(["currentTrack"]),
+    ...mapState(["currentTrack", "currentToken"]),
     ...mapFields(["tabVersion"]),
     approvedTabs() {
       return this.currentTrack.tabs.filter((tab) => tab.approved);
+    },
+  },
+  async created() {
+    this.authorProfilePic = (
+      await spotify.getOtherUser(
+        this.currentTrack.tabs[this.tabVersion].author,
+        this.currentToken
+      )
+    ).images[0].url;
+  },
+  watch: {
+    async tabVersion() {
+      this.authorProfilePic = (
+        await spotify.getOtherUser(
+          this.currentTrack.tabs[this.tabVersion].author,
+          this.currentToken
+        )
+      ).images[0].url;
     },
   },
 };

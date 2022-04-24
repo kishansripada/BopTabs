@@ -15,7 +15,15 @@
     >
       There are no tabs for this song 😪 Upload your own!
     </h1>
-    <img src="" alt="" />
+    <img
+      style="
+        position: absolute;
+        height: 150px;
+        right: 5%;
+        transform: rotate(20deg);
+      "
+      src="https://raw.githubusercontent.com/kishansripada/BopTabs/master/src/assets/arrow.png"
+    />
   </div>
 </template>
 <script>

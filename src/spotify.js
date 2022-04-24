@@ -145,6 +145,21 @@ export async function getUser(access_token) {
    return body;
 }
 
+export async function getOtherUser(user_id, access_token) {
+   let body = fetch(`https://api.spotify.com/v1/users/${user_id}`, {
+      headers: {
+         Accept: "application/json",
+         Authorization: `Bearer ${access_token}`,
+         "Content-Type": "application/json",
+      },
+   })
+      .then((response) => response.json())
+      .catch((err) => {
+         console.error(err);
+      });
+   return body;
+}
+
 export async function getUserSavedTracks(access_token) {
    let body = await fetch("https://api.spotify.com/v1/me/tracks?limit=50", {
       headers: {

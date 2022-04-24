@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <TabInfo v-if="approvedTabs?.length" />
+    <TabInfo v-if="approvedTabs?.length && currentTrack" />
 
     <Flat
       v-if="currentTrack && approvedTabs?.length"
@@ -76,15 +76,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(["currentTrack"]),
+    ...mapState(["currentTrack", "isAdding"]),
     loggedIn() {
       return Boolean(localStorage.token);
     },
     approvedTabs() {
-      return this.currentTrack.tabs?.filter((tab) => tab.approved);
-    },
-    isAdding() {
-      return this.$store.state.isAdding;
+      return this.currentTrack?.tabs?.filter((tab) => tab.approved);
     },
   },
 
