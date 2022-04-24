@@ -59,7 +59,7 @@ export default createStore({
          Promise.all([track, trackAnalysis, artists, mongoTrack]).then((arr) => {
             track = {
                ...arr[0],
-               trackAnalysis: { ...arr[1], bars: arr[1].bars.reverse() },
+               trackAnalysis: arr[1],
                artists: arr[2],
                tabs: arr[3]?.tabs,
             };
