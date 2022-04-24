@@ -9,7 +9,7 @@
       <input
         class="form-control me-2"
         type="search"
-        placeholder="Search"
+        placeholder="Search for songs...  "
         aria-label="Search"
         v-model="searchQuery"
         style="width: 400px"
