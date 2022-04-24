@@ -44,7 +44,6 @@
       v-show="tabsOrChords == `chords`"
       Chords
     />
-    <!-- <WebPlayback v-if="loggedIn" /> -->
   </div>
 </template>
 <script>

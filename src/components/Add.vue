@@ -24,7 +24,7 @@
       z-index: 100000;
       position: absolute;
       width: 600px;
-      height: 300px;
+      height: 380px;
       background-color: #ffffff;
       border: solid gray 5px;
     "
@@ -37,6 +37,7 @@
           : currentTrack.name
       }}
     </h1>
+    <p>Upload a music XML file</p>
     <input
       class="form-control mb-2"
       type="file"
@@ -54,7 +55,9 @@
       v-model="description"
       style=""
     />
-
+    <p class="pt-3">
+      We will review your tablature and approve or reject it within 48 hours.
+    </p>
     <div class="d-flex flex-fill">
       <button class="btn btn-primary mt-auto me-auto" v-on:click="cancel()">
         Cancel

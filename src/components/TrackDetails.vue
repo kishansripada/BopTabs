@@ -1,37 +1,26 @@
 <template>
   <div
-    class="
-      container
-      d-flex
-      position-relative
-      p-0
-      shadow-lg
-      rounded-3
-      mt-5
-      position-relative
-    "
+    class="container d-flex p-0 shadow-lg rounded-3 mt-5"
     style="height: 250px"
   >
-    <img
-      class="rounded-3 justify-content-start"
-      :src="`${currentTrack.album.images[0].url}`"
-      alt
-    />
+    <div class="">
+      <img
+        class="rounded-3"
+        :src="`${currentTrack.album.images[0]?.url}`"
+        style="height: 250px"
+      />
+    </div>
 
-    <ul>
+    <div class="me-auto d-flex align-items-start flex-column mb-0">
       <h1 class="ms-4 mt-3">
         {{
-          currentTrack.name.length > 50
-            ? currentTrack.name.substring(0, 50) + "..."
+          currentTrack.name.length > 40
+            ? currentTrack.name.substring(0, 40) + "..."
             : currentTrack.name
         }}
       </h1>
       <p class="ms-4 mb-3">{{ currentTrack.album.name }}</p>
-
-      <ul
-        class="ps-4 overflow: auto white-space: nowrap;"
-        style="display:inline margin: 0 padding: 0"
-      >
+      <ul>
         <li
           v-for="artist in currentTrack.artists"
           :key="artist.id"
@@ -40,9 +29,9 @@
         >
           <div class="text-center" style="width: 6rem">
             <img
-              :src="artist.images[0].url"
+              :src="artist.images[0]?.url"
               class="card-img-top rounded-3"
-              style="object-fit: cover; width: 100px; height: 100px"
+              style="width: 100px; height: 100px"
             />
             <p class="pt-1" style="white-space: nowrap">
               {{
@@ -54,88 +43,36 @@
           </div>
         </li>
       </ul>
-    </ul>
-
-    <ul
-      class="position-absolute bottom-0 end-0"
-      style="margin-right: 15px; list-style-type: none"
+    </div>
+    <div
+      class="d-flex align-items-end flex-column ms-auto"
+      style="height: 200px"
     >
-      <li v-if="currentTrack.explicit" class="fs-4" style="text-align: right">
-        🤬
-      </li>
-      <li
-        v-if="currentTrack.trackAnalysis.track.time_signature == 4"
-        class="fs-4"
-        style="text-align: right"
-      >
-        <img style="width: 25px" src="../assets/44.svg" alt />
-      </li>
-      <li
-        v-if="currentTrack.trackAnalysis.track.time_signature == 3"
-        class="fs-4"
-        style="text-align: right"
-      >
-        <img style="width: 25px" src="../assets/34.svg" alt />
-      </li>
-      <li class style="text-align: right">
-        ⏳
-        {{ formattedDate }}
-      </li>
-      <li class style="text-align: right">
+      <div class="px-2 pt-2 bd-highlight">
+        {{ currentTrack.album.release_date }}
+      </div>
+      <div class="px-2 pt-2 bd-highlight">
+        {{ formattedTime }}
+      </div>
+      <div class="px-2 pt-1 bd-highlight">
         ⏱ {{ Math.round(currentTrack.trackAnalysis.track.tempo) }} bpm
-      </li>
+      </div>
 
-      <li class style="text-align: right">
-        🎼
-        {{
-          ((v) => {
-            return v == 0
-              ? "C"
-              : v == 1
-              ? "C#"
-              : v == 2
-              ? "D"
-              : v == 3
-              ? "D#"
-              : v == 4
-              ? "E"
-              : v == 5
-              ? "F"
-              : v == 6
-              ? "F#"
-              : v == 7
-              ? "G"
-              : v == 8
-              ? "G#"
-              : v == 9
-              ? "A"
-              : v == 10
-              ? "A#"
-              : v == 11
-              ? "B"
-              : "";
-          })(currentTrack.trackAnalysis.track.key)
-        }}
-        {{
-          ((v) => {
-            return v == 0 ? " Minor" : v == 1 ? " Major" : "";
-          })(currentTrack.trackAnalysis.track.mode)
-        }}
-      </li>
-      <li class style="text-align: right">
+      <div class="px-2 pt-1 bd-highlight">🎼 {{ formattedKey }}</div>
+
+      <div class="px-2 pt-1 bd-highlight">
         &#128293; {{ currentTrack.popularity }}
-      </li>
-    </ul>
+      </div>
 
-    <p class="position-absolute top-0 end-0 mt-2 me-4">
-      {{ currentTrack.album.release_date }}
-    </p>
-    <button
-      class="btn btn-primary me-5 ms-auto mt-auto"
-      v-on:click="showAddingPopup()"
-    >
-      Upload Your Version
-    </button>
+      <div class="px-2 pt-1 bd-highlight fs-4">
+        <img style="width: 25px" :src="timeSigImg" alt />
+      </div>
+      <div class="px-2 pt-1 mt-auto bd-highlight">
+        <button class="btn btn-primary" v-on:click="showAddingPopup()">
+          Upload Your Own Tabs
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -145,7 +82,7 @@ export default {
     currentTrack() {
       return this.$store.state.currentTrack;
     },
-    formattedDate() {
+    formattedTime() {
       let time = this.currentTrack.trackAnalysis.track.duration;
       var hrs = ~~(time / 3600);
       var mins = ~~((time % 3600) / 60);
@@ -157,6 +94,36 @@ export default {
       ret += "" + mins + ":" + (secs < 10 ? "0" : "");
       ret += "" + secs;
       return ret;
+    },
+    formattedKey() {
+      let keys = {
+        0: "C",
+        1: "C#",
+        2: "D",
+        3: "D#",
+        4: "E",
+        5: "F",
+        6: "F#",
+        7: "G",
+        8: "G#",
+        9: "A",
+        10: "A#",
+        11: "B",
+      };
+
+      let mode = ((v) => {
+        return v == 0 ? " Minor" : v == 1 ? " Major" : "";
+      })(this.currentTrack.trackAnalysis.track.mode);
+
+      return keys[this.currentTrack.trackAnalysis.track.key] + " " + mode;
+    },
+    timeSigImg() {
+      let timeSig = this.currentTrack.trackAnalysis.track.time_signature;
+      return timeSig == 3
+        ? "https://raw.githubusercontent.com/kishansripada/BopTabs/master/src/assets/34.svg"
+        : timeSig == 4
+        ? "https://raw.githubusercontent.com/kishansripada/BopTabs/master/src/assets/44.svg"
+        : "";
     },
   },
   methods: {

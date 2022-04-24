@@ -8,17 +8,12 @@
         :key="index"
       >
         <a>
-          <div
-            class="card"
-            :class="{ active: index == currentBar }"
-            v-on:click="changePosition(beat)"
-          >
+          <div class="card" v-on:click="changePosition(beat)">
             <div>
               <button
                 type="button"
                 :class="{
                   btn: true,
-                  'btn-info': !(index == currentBar),
                   'btn-warning': index == currentBar,
                 }"
               >
