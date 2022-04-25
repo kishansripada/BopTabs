@@ -15,7 +15,7 @@
 
     <div class="ms-auto d-flex align-items-end flex-column mb-3" style="">
       <div class="p-3">
-        {{ currentTrack.tabs[tabVersion].dateSubmitted.slice(0, 10) }}
+        <!-- {{ currentTrack.tabs[tabVersion].dateSubmitted.slice(0, 10) }} -->
       </div>
 
       <select
@@ -54,6 +54,9 @@ export default {
     },
   },
   async created() {
+    this.$store.commit("setTabVersion", this.$route.params.version - 1);
+
+    // console.log();
     this.authorProfilePic = (
       await spotify.getOtherUser(
         this.currentTrack.tabs[this.tabVersion].author,

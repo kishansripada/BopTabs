@@ -35,6 +35,9 @@ export default createStore({
       setIsAdding(state, adding) {
          state.isAdding = adding;
       },
+      setTabVersion(state, version) {
+         state.tabVersion = version;
+      },
    },
    actions: {
       async setCurrentToken(state) {

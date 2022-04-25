@@ -16,7 +16,7 @@
       <div v-for="track in tabbedSavedTracks" :key="track.track.id">
         <router-link
           style="text-decoration: none; color: black"
-          :to="`/track/${track.track.id}/tabs`"
+          :to="`/track/${track.track.id}/tabs/1`"
           ><a
             href="#"
             class="list-group-item list-group-item-action d-flex gap-3 py-3"

@@ -1,7 +1,7 @@
 <template>
   <div>
     <TrackDetails v-if="currentTrack" TrackDetails />
-    <div class="mt-4 container text-center">
+    <div class="mt-4 container text-center" v-if="currentTrack">
       <div
         class="btn-group"
         role="group"
@@ -29,7 +29,9 @@
       </div>
     </div>
 
-    <TabInfo v-if="approvedTabs?.length && currentTrack" />
+    <TabInfo
+      v-if="currentTrack && approvedTabs?.length && tabsOrChords == `tabs`"
+    />
 
     <Flat
       v-if="currentTrack && approvedTabs?.length"
@@ -39,7 +41,9 @@
 
     <Add v-if="currentTrack && isAdding" />
 
-    <NoTabs v-if="!approvedTabs?.length && tabsOrChords == `tabs`"></NoTabs>
+    <NoTabs
+      v-if="currentTrack && !approvedTabs?.length && tabsOrChords == `tabs`"
+    ></NoTabs>
 
     <Chords
       v-if="currentTrack?.trackAnalysis"

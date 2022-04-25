@@ -38,7 +38,7 @@
           <div class="fw-bold">
             <router-link
               style="text-decoration: none"
-              :to="`/track/${track.spotifyId}/tabs`"
+              :to="`/track/${track.spotifyId}/tabs/1`"
               class="text-dark"
               >{{ track.name }}</router-link
             >
@@ -57,7 +57,7 @@
           <div class="fw-bold">
             <router-link
               style="text-decoration: none"
-              :to="`/track/${track.id}/tabs`"
+              :to="`/track/${track.id}/tabs/1`"
               class="text-dark"
               >{{ track.name }}</router-link
             >

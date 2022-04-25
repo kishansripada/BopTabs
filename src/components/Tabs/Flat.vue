@@ -10,10 +10,14 @@
 
 <script>
 import Embed from "flat-embed";
+import { mapFields } from "vuex-map-fields";
+
 export default {
   name: "flat",
 
-  computed: {},
+  computed: {
+    ...mapFields(["tabVersion"]),
+  },
   methods: {},
   async created() {},
   async mounted() {
@@ -32,7 +36,9 @@ export default {
       async () => {
         embed.stop();
         if (this.$store.state.currentTrack.tabs) {
-          embed.loadMusicXML(this.$store.state.currentTrack.tabs[0].musicXml);
+          embed.loadMusicXML(
+            this.$store.state.currentTrack.tabs[this.tabVersion].musicXml
+          );
         }
       }
     );
@@ -47,6 +53,12 @@ export default {
               .musicXml
           );
         }
+
+        this.$router.push({
+          path: `/track/${this.$store.state.currentTrack.id}/tabs/${
+            this.$store.state.tabVersion + 1
+          }`,
+        });
       }
     );
   },
