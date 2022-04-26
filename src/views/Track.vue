@@ -29,62 +29,60 @@
       </div>
     </div>
 
-    <TabInfo
-      v-if="currentTrack && approvedTabs?.length && tabsOrChords == `tabs`"
-    />
-
-    <Flat
-      v-if="currentTrack && approvedTabs?.length"
-      v-show="tabsOrChords == `tabs`"
-      flat
-    />
-
-    <AddTab v-if="currentTrack && isAdding" />
-
-    <NoTabsNoChords
-      v-if="currentTrack && !approvedTabs?.length && tabsOrChords == `tabs`"
-    ></NoTabsNoChords>
-
+    <Tabs v-if="currentTrack" v-show="tabsOrChords == `tabs`"> </Tabs>
     <Chords
       v-if="currentTrack?.trackAnalysis"
       v-show="tabsOrChords == `chords`"
-      Chords
-    />
+    >
+    </Chords>
+    <NoTabsNoChords
+      v-if="
+        (currentTrack && !approvedTabs?.length && tabsOrChords == `tabs`) ||
+        (currentTrack &&
+          !approvedChords?.length &&
+          tabsOrChords == `chords` &&
+          !isWritingChords)
+      "
+    ></NoTabsNoChords>
   </div>
 </template>
 <script>
 import { mapState } from "vuex";
 import { mapFields } from "vuex-map-fields";
 import TrackDetails from "@/components/TrackDetails.vue";
-import Flat from "@/components/Tabs/Flat.vue";
 import Chords from "@/components/Chords/Chords.vue";
+import Tabs from "@/components/Tabs/Tabs.vue";
 import WebPlayback from "@/components/WebPlayback.vue";
-import AddTab from "@/components/Tabs/AddTab.vue";
-import TabInfo from "@/components/Tabs/TabInfo.vue";
 import NoTabsNoChords from "@/components/NoTabsNoChords.vue";
 
 export default {
   name: "Track",
   components: {
     TrackDetails,
-    Flat,
+    Tabs,
     Chords,
     WebPlayback,
-    AddTab,
-    TabInfo,
     NoTabsNoChords,
   },
   data() {
     return {};
   },
   computed: {
-    ...mapState(["currentTrack", "isAdding"]),
+    ...mapState([
+      "currentTrack",
+      "isWritingChords",
+      "tabVersion",
+      "chordVersion",
+    ]),
     ...mapFields(["tabsOrChords"]),
     loggedIn() {
       return Boolean(localStorage.token);
     },
     approvedTabs() {
       return this.currentTrack?.tabs?.filter((tab) => tab.approved);
+    },
+    approvedChords() {
+      return this.currentTrack?.chords?.filter((chord) => chord.approved);
     },
   },
 
@@ -98,8 +96,31 @@ export default {
       async () => {
         await this.$store.dispatch("setCurrentTrack", this.$route.params.id);
         this.$store.commit("setSpotifyCondition", null);
+        this.$store.commit("setTabVersion", 0);
+        this.$store.commit("setChordVersion", 0);
       }
     );
+  },
+  watch: {
+    tabsOrChords() {
+      this.$router.push(
+        `/track/${this.$route.params.id}/${this.tabsOrChords}/${
+          this.tabsOrChords == "tabs"
+            ? this.tabVersion + 1
+            : this.chordVersion + 1
+        }`
+      );
+    },
+    tabVersion() {
+      this.$router.push({
+        path: `/track/${this.currentTrack.id}/tabs/${this.tabVersion + 1}`,
+      });
+    },
+    chordVersion() {
+      this.$router.push({
+        path: `/track/${this.currentTrack.id}/chords/${this.chordVersion + 1}`,
+      });
+    },
   },
 };
 </script>

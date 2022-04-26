@@ -145,7 +145,7 @@ export default {
         dateSubmitted: new Date(),
       };
 
-      if (track.chords) {
+      if (track.chords && track.tabs) {
         // if track exists
         this.user.functions.addNewChords(track.id, chordObject).then(() => {
           location.reload();

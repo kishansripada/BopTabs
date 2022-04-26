@@ -9,10 +9,10 @@ export default createStore({
       currentToken: null,
       currentTrack: null,
       spotifyCondition: null,
-      flatCondition: "paused",
       spotifyPosition: null,
       chordPosition: null,
       tabVersion: 0,
+      chordVersion: 0,
       isAdding: false,
       tabsOrChords: "tabs",
       isWritingChords: false,
@@ -39,6 +39,9 @@ export default createStore({
       },
       setTabVersion(state, version) {
          state.tabVersion = version;
+      },
+      setChordVersion(state, version) {
+         state.chordVersion = version;
       },
       setIsWritingChords(state, version) {
          state.isWritingChords = version;

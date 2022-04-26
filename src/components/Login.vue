@@ -27,9 +27,6 @@ import * as spotify from "../spotify.js";
 
 export default {
   name: "Login",
-  data() {
-    return {};
-  },
   computed: {
     token() {
       return JSON.parse(localStorage.token || null);

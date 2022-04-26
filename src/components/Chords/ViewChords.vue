@@ -1,17 +1,18 @@
 <template>
   <div class="container mt-4">
     <div class="row row-cols-1 row-cols-md-8 g-4">
-      <div class="col" v-for="(beat, index) in userInputChords" :key="index">
+      <div class="col" v-for="(beat, index) in chords" :key="index">
         <div class="card" v-on:click="changePosition(beat)">
           <div>
             <button
               type="button"
+              style="height: 35px; width: 80x"
               :class="{
                 btn: true,
                 'btn-warning': index == currentBar,
               }"
             >
-              A#m
+              {{ beat.chord }}
             </button>
           </div>
         </div>
@@ -26,21 +27,17 @@ import { mapFields } from "vuex-map-fields";
 export default {
   name: "ViewChords",
   computed: {
-    ...mapState(["currentTrack", "spotifyPosition", "isWritingChords"]),
+    ...mapState(["currentTrack", "spotifyPosition", "chordVersion"]),
     currentBar() {
-      return this.userInputChords.findIndex((beat) => {
+      return this.chords.findIndex((beat) => {
         return this.spotifyPosition / 1000 < beat.start;
       });
     },
+    chords() {
+      return this.currentTrack.chords[this.chordVersion].chords;
+    },
   },
-  data() {
-    return {
-      userInputChords: [],
-    };
-  },
-  async created() {
-    this.userInputChords = this.currentTrack.trackAnalysis.beats;
-  },
+  async created() {},
   methods: {
     changePosition(beat) {
       this.$store.commit("setChordPosition", beat.start);

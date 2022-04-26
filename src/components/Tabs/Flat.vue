@@ -14,53 +14,39 @@ import { mapFields } from "vuex-map-fields";
 
 export default {
   name: "flat",
-
+  data() {
+    return {
+      embed: null,
+    };
+  },
   computed: {
-    ...mapFields(["tabVersion"]),
+    ...mapFields(["tabVersion", "currentTrack"]),
   },
   methods: {},
   async created() {},
   async mounted() {
     var container = this.$refs.embedContainer;
-    const embed = new Embed(container, {
+    this.embed = new Embed(container, {
       embedParams: {
         appId: "59e7684b476cba39490801c2",
         controlsPosition: "bottom",
       },
     });
-
-    embed.loadMusicXML(this.$store.state.currentTrack.tabs[0].musicXml);
-
-    this.$watch(
-      () => this.$store.state.currentTrack,
-      async () => {
-        embed.stop();
-        if (this.$store.state.currentTrack.tabs) {
-          embed.loadMusicXML(
-            this.$store.state.currentTrack.tabs[this.tabVersion].musicXml
-          );
-        }
+    this.embed.loadMusicXML(this.$store.state.currentTrack.tabs[0].musicXml);
+  },
+  watch: {
+    currentTrack() {
+      if (this.currentTrack.tabs) {
+        this.embed.stop();
+        this.embed.loadMusicXML(
+          this.currentTrack.tabs[this.tabVersion].musicXml
+        );
       }
-    );
-    this.$watch(
-      () => this.$store.state.tabVersion,
-      async () => {
-        console.log("version changed");
-        if (this.$store.state.currentTrack.tabs) {
-          embed.stop();
-          embed.loadMusicXML(
-            this.$store.state.currentTrack.tabs[this.$store.state.tabVersion]
-              .musicXml
-          );
-        }
-
-        this.$router.push({
-          path: `/track/${this.$store.state.currentTrack.id}/tabs/${
-            this.$store.state.tabVersion + 1
-          }`,
-        });
-      }
-    );
+    },
+    tabVersion() {
+      this.embed.stop();
+      this.embed.loadMusicXML(this.currentTrack.tabs[this.tabVersion].musicXml);
+    },
   },
 };
 </script>

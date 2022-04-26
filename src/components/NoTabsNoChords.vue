@@ -13,7 +13,11 @@
         text-align: center;
       "
     >
-      There are no tabs for this song 😪 Upload your own!
+      {{
+        `There are no ${tabsOrChords} for this song 😪 ${
+          tabsOrChords == "tabs" ? "Upload" : "Write"
+        } your own!`
+      }}
     </h1>
     <img
       style="
@@ -28,19 +32,11 @@
 </template>
 <script>
 import { mapState } from "vuex";
-import { mapFields } from "vuex-map-fields";
 
 export default {
   name: "NoTabsNoChords",
-  data() {
-    return {};
-  },
   computed: {
-    ...mapState(["currentTrack"]),
-    ...mapFields(["tabVersion"]),
-    approvedTabs() {
-      return this.currentTrack.tabs.filter((tab) => tab.approved);
-    },
+    ...mapState(["tabsOrChords"]),
   },
 };
 </script>
