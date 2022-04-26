@@ -68,19 +68,42 @@
         <img style="width: 25px" :src="timeSigImg" alt />
       </div>
       <div class="px-2 pt-1 mt-auto bd-highlight">
-        <button class="btn btn-primary" v-on:click="showAddingPopup()">
+        <button
+          v-if="tabsOrChords == `tabs`"
+          class="btn btn-primary"
+          v-on:click="showAddingPopup()"
+        >
           Upload Your Own Tabs
+        </button>
+
+        <button
+          class="btn btn-primary"
+          @click="setWritingChords(true)"
+          v-if="tabsOrChords == `chords` && !isWritingChords"
+        >
+          Write Your Own Chords
+        </button>
+        <button
+          class="btn btn-primary"
+          @click="setWritingChords(false)"
+          v-if="tabsOrChords == `chords` && isWritingChords"
+        >
+          Cancel
         </button>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
+import { mapFields } from "vuex-map-fields";
 import querystring from "querystring";
 
 export default {
   name: "TrackDetails",
   computed: {
+    ...mapState(["isWritingChords"]),
+    ...mapFields(["tabsOrChords"]),
     currentTrack() {
       return this.$store.state.currentTrack;
     },
@@ -151,6 +174,9 @@ export default {
             // state: "state",
           });
       }
+    },
+    setWritingChords(state) {
+      this.$store.commit("setIsWritingChords", state);
     },
   },
 };

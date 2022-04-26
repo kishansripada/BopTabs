@@ -14,6 +14,8 @@ export default createStore({
       chordPosition: null,
       tabVersion: 0,
       isAdding: false,
+      tabsOrChords: "tabs",
+      isWritingChords: false,
    },
    mutations: {
       updateField,
@@ -37,6 +39,9 @@ export default createStore({
       },
       setTabVersion(state, version) {
          state.tabVersion = version;
+      },
+      setIsWritingChords(state, version) {
+         state.isWritingChords = version;
       },
    },
    actions: {
@@ -65,6 +70,7 @@ export default createStore({
                trackAnalysis: arr[1],
                artists: arr[2],
                tabs: arr[3]?.tabs,
+               chords: arr[3]?.chords,
             };
             console.log(track);
             commit("setCurrentTrack", track);

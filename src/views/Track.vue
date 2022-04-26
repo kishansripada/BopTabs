@@ -39,11 +39,11 @@
       flat
     />
 
-    <Add v-if="currentTrack && isAdding" />
+    <AddTab v-if="currentTrack && isAdding" />
 
-    <NoTabs
+    <NoTabsNoChords
       v-if="currentTrack && !approvedTabs?.length && tabsOrChords == `tabs`"
-    ></NoTabs>
+    ></NoTabsNoChords>
 
     <Chords
       v-if="currentTrack?.trackAnalysis"
@@ -57,11 +57,11 @@ import { mapState } from "vuex";
 import { mapFields } from "vuex-map-fields";
 import TrackDetails from "@/components/TrackDetails.vue";
 import Flat from "@/components/Tabs/Flat.vue";
-import Chords from "@/components/Chords.vue";
+import Chords from "@/components/Chords/Chords.vue";
 import WebPlayback from "@/components/WebPlayback.vue";
-import Add from "@/components/Add.vue";
+import AddTab from "@/components/Tabs/AddTab.vue";
 import TabInfo from "@/components/Tabs/TabInfo.vue";
-import NoTabs from "@/components/Tabs/NoTabs.vue";
+import NoTabsNoChords from "@/components/NoTabsNoChords.vue";
 
 export default {
   name: "Track",
@@ -70,17 +70,16 @@ export default {
     Flat,
     Chords,
     WebPlayback,
-    Add,
+    AddTab,
     TabInfo,
-    NoTabs,
+    NoTabsNoChords,
   },
   data() {
-    return {
-      tabsOrChords: "tabs",
-    };
+    return {};
   },
   computed: {
     ...mapState(["currentTrack", "isAdding"]),
+    ...mapFields(["tabsOrChords"]),
     loggedIn() {
       return Boolean(localStorage.token);
     },

@@ -56,7 +56,6 @@ export default {
   async created() {
     this.$store.commit("setTabVersion", this.$route.params.version - 1);
 
-    // console.log();
     this.authorProfilePic = (
       await spotify.getOtherUser(
         this.currentTrack.tabs[this.tabVersion].author,

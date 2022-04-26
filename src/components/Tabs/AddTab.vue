@@ -75,7 +75,7 @@ import * as Realm from "realm-web";
 import { mapState } from "vuex";
 import { mapFields } from "vuex-map-fields";
 export default {
-  name: "Add",
+  name: "AddTab",
   computed: {
     ...mapState(["currentTrack"]),
     isAdding() {
@@ -88,7 +88,6 @@ export default {
       description: "",
     };
   },
-
   async created() {
     const app = new Realm.App({ id: "boptabs-wwrqq" });
     const credentials = Realm.Credentials.anonymous();
@@ -130,9 +129,10 @@ export default {
                 dateSubmitted: new Date(),
               },
             ],
+            chords: [],
           };
 
-          this.user.functions.addMusicXml(document);
+          this.user.functions.addOne(document);
         }
       }
       this.$store.commit("setIsAdding", false);
