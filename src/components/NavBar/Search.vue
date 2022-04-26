@@ -71,7 +71,7 @@
 </template>
 <script>
 import * as spotify from "../../spotify.js";
-import * as Realm from "realm-web";
+import { App, Credentials } from "realm-web";
 
 export default {
   name: "search",
@@ -85,8 +85,8 @@ export default {
     };
   },
   async created() {
-    const app = new Realm.App({ id: "boptabs-wwrqq" });
-    const credentials = Realm.Credentials.anonymous();
+    const app = new App({ id: "boptabs-wwrqq" });
+    const credentials = Credentials.anonymous();
     const user = await app.logIn(credentials);
     this.user = user;
   },

@@ -71,9 +71,8 @@
 
 
 <script>
-import * as Realm from "realm-web";
+import { App, Credentials } from "realm-web";
 import { mapState } from "vuex";
-import { mapFields } from "vuex-map-fields";
 export default {
   name: "AddTab",
   computed: {
@@ -89,8 +88,8 @@ export default {
     };
   },
   async created() {
-    const app = new Realm.App({ id: "boptabs-wwrqq" });
-    const credentials = Realm.Credentials.anonymous();
+    const app = new App({ id: "boptabs-wwrqq" });
+    const credentials = Credentials.anonymous();
     const user = await app.logIn(credentials);
     this.user = user;
   },

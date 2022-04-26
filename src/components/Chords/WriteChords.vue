@@ -1,6 +1,38 @@
 <template>
   <div>
     <button
+      @click="autofill()"
+      style="
+        position: absolute;
+        right: 110px;
+        margin-top: -40px;
+        border: solid gray 1px;
+      "
+      type="button"
+      :class="{
+        btn: true,
+      }"
+    >
+      Autofill
+    </button>
+    <button
+      @click="clear()"
+      style="
+        position: absolute;
+        right: 220px;
+        margin-top: -40px;
+        border: solid gray 1px;
+      "
+      type="button"
+      :class="{
+        btn: true,
+      }"
+    >
+      Clear
+    </button>
+
+    <button
+      @click="trimStartBeat"
       style="
         position: absolute;
         left: 20px;
@@ -70,7 +102,7 @@
 <script>
 import { mapState } from "vuex";
 import { mapFields } from "vuex-map-fields";
-import * as Realm from "realm-web";
+import { App, Credentials } from "realm-web";
 export default {
   name: "WriteChords",
   computed: {
@@ -115,10 +147,10 @@ export default {
     };
   },
   async created() {
-    this.userInputChords = this.currentTrack.trackAnalysis.beats;
+    this.userInputChords = this.currentTrack.trackAnalysis.beats.slice();
 
-    const app = new Realm.App({ id: "boptabs-wwrqq" });
-    const credentials = Realm.Credentials.anonymous();
+    const app = new App({ id: "boptabs-wwrqq" });
+    const credentials = Credentials.anonymous();
     const user = await app.logIn(credentials);
     this.user = user;
   },
@@ -164,6 +196,37 @@ export default {
           location.reload();
         });
       }
+    },
+    autofill() {
+      const makeRepeated = (arr, repeats) =>
+        Array.from({ length: repeats }, () => arr).flat();
+
+      let chords = this.userInputChords.slice();
+      let reversed = chords.slice().reverse();
+
+      if (chords.filter((beat) => beat.chord).length > 2) {
+        let firstChordIndex = chords.findIndex((beat) => beat.chord);
+        let lastChordIndex =
+          chords.length - reversed.findIndex((beat) => beat.chord) - 1;
+
+        let chunk = chords
+          .map((beat) => beat.chord)
+          .slice(firstChordIndex, lastChordIndex);
+
+        let outputChords = [
+          ...new Array(firstChordIndex).fill(undefined),
+          ...makeRepeated(chunk, chords.length / chunk.length),
+        ];
+        this.userInputChords = this.userInputChords.map((chord, index) => {
+          return {
+            ...chord,
+            chord: outputChords[index],
+          };
+        });
+      }
+    },
+    clear() {
+      this.userInputChords = this.currentTrack.trackAnalysis.beats.slice();
     },
   },
 };

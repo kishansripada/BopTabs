@@ -97,7 +97,7 @@
 <script>
 import { mapState } from "vuex";
 import { mapFields } from "vuex-map-fields";
-import querystring from "querystring";
+import { encode } from "querystring";
 
 export default {
   name: "TrackDetails",
@@ -166,11 +166,11 @@ export default {
         ].join(" ");
         window.location.href =
           "https://accounts.spotify.com/authorize?" +
-          querystring.encode({
+          encode({
             response_type: "code",
             client_id: "29110b23f6d14d67856438c2504dd2c4",
             scope: scope,
-            redirect_uri: "http://localhost:8080/",
+            redirect_uri: window.location.origin,
             // state: "state",
           });
       }

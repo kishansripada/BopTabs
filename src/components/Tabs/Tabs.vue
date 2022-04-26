@@ -8,7 +8,6 @@
 
 <script>
 import { mapState } from "vuex";
-import { mapFields } from "vuex-map-fields";
 import Flat from "@/components/Tabs/Flat.vue";
 import AddTab from "@/components/Tabs/AddTab.vue";
 import TabInfo from "@/components/Tabs/TabInfo.vue";

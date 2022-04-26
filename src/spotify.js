@@ -114,10 +114,9 @@ export async function search(query, types, limit, token) {
    var result = await getPage(apiUrl, token);
    return result;
 }
-
 export async function getAuthToken(code) {
    let body = await fetch("https://accounts.spotify.com/api/token", {
-      body: `grant_type=authorization_code&code=${code}&redirect_uri=http://localhost:8080/&client_id=29110b23f6d14d67856438c2504dd2c4&client_secret=66a194de8fc54b7eac48ae165ecdd09f`,
+      body: `grant_type=authorization_code&code=${code}&redirect_uri=${window.location.origin}&client_id=29110b23f6d14d67856438c2504dd2c4&client_secret=66a194de8fc54b7eac48ae165ecdd09f`,
       headers: {
          "Content-Type": "application/x-www-form-urlencoded",
       },

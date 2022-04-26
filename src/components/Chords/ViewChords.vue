@@ -34,7 +34,9 @@ export default {
       });
     },
     chords() {
-      return this.currentTrack.chords[this.chordVersion].chords;
+      return this.currentTrack.chords.filter((chord) => chord.approved)[
+        this.chordVersion
+      ].chords;
     },
   },
   async created() {},

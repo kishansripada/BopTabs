@@ -28,7 +28,7 @@ export default {
     var container = this.$refs.embedContainer;
     this.embed = new Embed(container, {
       embedParams: {
-        appId: "59e7684b476cba39490801c2",
+        appId: "5fe56705315dc443c12fb489",
         controlsPosition: "bottom",
       },
     });
