@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Embed from "flat-embed";
+import { Embed } from "flat-embed";
 import { mapFields } from "vuex-map-fields";
 
 export default {

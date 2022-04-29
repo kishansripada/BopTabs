@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 import * as spotify from "../spotify.js";
-import * as Realm from "realm-web";
+import { App, Credentials } from "realm-web";
 
 import { getField, updateField } from "vuex-map-fields";
 
@@ -53,8 +53,8 @@ export default createStore({
          state.commit("setCurrentToken", token.access_token);
       },
       async setCurrentTrack({ commit, state }, id) {
-         const app = new Realm.App({ id: "boptabs-wwrqq" });
-         const credentials = Realm.Credentials.anonymous();
+         const app = new App({ id: "boptabs-wwrqq" });
+         const credentials = Credentials.anonymous();
          const user = await app.logIn(credentials);
          let mongoTrack = user.functions.getTrack(id);
 

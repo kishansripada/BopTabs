@@ -1,7 +1,7 @@
 <template>
   <div>
-    <ChordInfo v-if="approvedChords.length && !isWritingChords"></ChordInfo>
-    <ViewChords v-if="!isWritingChords && approvedChords.length"></ViewChords>
+    <ChordInfo v-if="approvedChords?.length && !isWritingChords"></ChordInfo>
+    <ViewChords v-if="!isWritingChords && approvedChords?.length"></ViewChords>
     <WriteChords v-if="isWritingChords"></WriteChords>
   </div>
 </template>

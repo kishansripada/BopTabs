@@ -27,16 +27,20 @@ import * as spotify from "../spotify.js";
 
 export default {
   name: "Login",
-  computed: {
-    token() {
-      return JSON.parse(localStorage.token || null);
-    },
+  data() {
+    return {
+      token: JSON.parse(localStorage.token || null),
+    };
   },
+  // computed: {
+  //   token() {
+  //     return ;
+  //   },
+  // },
   async created() {
     console.log(window.location);
     // AFTER LOGIN///////////////////////////////
     await this.$store.dispatch("setCurrentToken");
-
     let uri = window.location.search.substring(1);
     let params = new URLSearchParams(uri);
     if (params.get("code")) {
@@ -44,23 +48,20 @@ export default {
       console.log(code);
       let token = await spotify.getAuthToken(code);
       console.log(token);
-      if (token.access_token) {
-        localStorage.token = JSON.stringify(token);
-        window.location.href = window.location.origin;
-        //    console.log(JSON.parse(localStorage.token))
-      }
-    }
-    // AFTER LOGIN///////////////////////////////
 
-    // if there is a local token, get the user and put it in local storage
-    if (this.token && !this.token.user) {
-      let user = await spotify.getUser(this.token.access_token);
+      let user = await spotify.getUser(token.access_token);
       localStorage.token = JSON.stringify({
-        ...this.token,
+        ...token,
         user: user,
       });
+      this.token = JSON.stringify({
+        ...token,
+        user: user,
+      });
+      window.location.href = window.location.origin;
     }
   },
+
   methods: {
     async connectSpotify() {
       let scope = [

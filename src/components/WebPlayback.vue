@@ -106,7 +106,7 @@ export default {
               this.$store.commit("setSpotifyPosition", state.position);
             }
           });
-        }, 50);
+        }, 10);
         this.$store.commit("setSpotifyCondition", "playing");
       } else {
         // otherwise just toggle play or pause the song
