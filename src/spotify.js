@@ -160,20 +160,8 @@ export async function getOtherUser(user_id, access_token) {
 }
 
 export async function getUserSavedTracks(access_token) {
-   let body = await fetch("https://api.spotify.com/v1/me/tracks?limit=50", {
-      headers: {
-         Authorization: `Bearer ${access_token}`,
-         "Content-Type": "application/json",
-      },
-   })
-      .then((response) => response.json())
-      .catch((err) => {
-         console.error(err);
-      });
-
-   while (body.next) {
-      let data = await fetch(body.next, {
-         method: "GET",
+   async function getPage(offset) {
+      return fetch(`https://api.spotify.com/v1/me/tracks?limit=50&offset=${offset}`, {
          headers: {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "application/json",
@@ -183,9 +171,10 @@ export async function getUserSavedTracks(access_token) {
          .catch((err) => {
             console.error(err);
          });
-
-      body.items.push(...data.items);
-      body.next = data.next;
    }
-   return body;
+   let page = await getPage(0);
+
+   let offsets = Array.from({ length: (page.total - 50) / 50 + 1 }, (_, i) => 50 + i * 50);
+
+   return [...page.items, ...(await Promise.all(offsets.map((offset) => getPage(offset)))).map((page) => page.items).flat()];
 }

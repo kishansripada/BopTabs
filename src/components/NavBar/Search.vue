@@ -1,11 +1,6 @@
 <template>
   <div>
-    <form
-      @submit.prevent="search"
-      v-on:keyup="search"
-      @keyup.delete="search"
-      class="d-flex"
-    >
+    <form @submit.prevent="search" v-on:keyup="search" class="d-flex">
       <input
         class="form-control me-2"
         type="search"
@@ -45,7 +40,9 @@
           </div>
           {{ track.primaryArtist }}
         </div>
-        <span class="badge bg-primary rounded-pill">Tabbed</span>
+        <span class="badge bg-primary rounded-pill">{{
+          tabsOrChords(track)
+        }}</span>
       </li>
       <li
         v-for="track in spotifySearchResults"
@@ -64,7 +61,7 @@
           </div>
           {{ track.artists.map((artist) => artist.name).join(", ") }}
         </div>
-        <span class="badge bg-secondary rounded-pill">Not Tabbed</span>
+        <span class="badge bg-secondary rounded-pill">Not Added</span>
       </li>
     </ul>
   </div>
@@ -72,6 +69,7 @@
 <script>
 import * as spotify from "../../spotify.js";
 import { App, Credentials } from "realm-web";
+import { debounce } from "lodash";
 
 export default {
   name: "search",
@@ -96,8 +94,24 @@ export default {
       this.mongoSearchResults = [];
       this.spotifySearchResults = [];
     },
+    tabsOrChords(track) {
+      let numTabs = track.tabs.filter((tab) => tab.approved).length;
+      let numChords = track.chords.filter((chords) => chords.approved).length;
+
+      if (numTabs && numChords) {
+        return `${numTabs} ${
+          numTabs == 1 ? "tab" : "tabs"
+        } & ${numChords} chords`;
+      } else if (numTabs) {
+        return `${numTabs} ${numTabs == 1 ? "tab" : "tabs"}`;
+      } else {
+        return `${numChords} chords`;
+      }
+    },
+
     async search() {
-      if (this.searchQuery.length < 3) {
+      console.log("search fired");
+      if (this.searchQuery.length == 0) {
         this.mongoSearchResults = [];
         this.spotifySearchResults = [];
         return;
@@ -105,10 +119,17 @@ export default {
 
       this.mongoSearchResults = [];
       this.spotifySearchResults = [];
-      const mongoSearchResults = await this.user.functions.search(
+      let mongoSearchResults = await this.user.functions.search(
         this.searchQuery
       );
 
+      // filter only songs that have approved chords or tabs
+      mongoSearchResults = mongoSearchResults.filter((track) => {
+        return (
+          track.tabs.filter((tab) => tab.approved).length ||
+          track.chords.filter((chords) => chords.approved).length
+        );
+      });
       console.log({ mongoSearchResults });
 
       this.mongoSearchResults = mongoSearchResults;

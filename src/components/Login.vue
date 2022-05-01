@@ -32,11 +32,7 @@ export default {
       token: JSON.parse(localStorage.token || null),
     };
   },
-  // computed: {
-  //   token() {
-  //     return ;
-  //   },
-  // },
+
   async created() {
     console.log(window.location);
     // AFTER LOGIN///////////////////////////////
@@ -59,6 +55,25 @@ export default {
         user: user,
       });
       window.location.href = window.location.origin;
+    } else if (this.token) {
+      let expired_token = `BQBs_xcTBfcOAlxXyrWmTreLfsejCE5xGa6Sf8eGTXjc8r_b1bpOUp9cMhGmx3IdKpXKMpTQXFY_Y5tj7Sg5hTcxbjSGxqeB4s2j_hwYjyqqE84agmzweYhJ78s2XXhxm8ETIgTRCv6W0PrujtKToKE4yrvs0b85gx-dQktm67xFY_jVS2Ni`;
+      fetch(
+        "https://api.spotify.com/v1/melody/v1/check_scope?scope=web-playback",
+        {
+          headers: {
+            Accept: "*/*",
+            Authorization: `Bearer ${this.token.access_token}`,
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "cross-site",
+            "Sec-Gpc": "1",
+          },
+        }
+      ).then((r) => {
+        if (r.status == 401) {
+          this.connectSpotify();
+        }
+      });
     }
   },
 

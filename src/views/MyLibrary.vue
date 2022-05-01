@@ -39,7 +39,9 @@
                   }}
                 </p>
               </div>
-              <button type="button" class="btn btn-primary">View Tab</button>
+              <button type="button" class="btn btn-primary">
+                {{ tabsOrChords(track) }}
+              </button>
             </div>
           </a></router-link
         >
@@ -67,59 +69,64 @@ export default {
   computed: {},
 
   methods: {
-    async getUserSavedTracks() {
-      // this.loading = true;
+    tabsOrChords(track) {
+      let numTabs = track.tabs.filter((tab) => tab.approved).length;
+      let numChords = track.chords.filter((chords) => chords.approved).length;
 
+      if (numTabs && numChords) {
+        return `View ${numTabs} ${
+          numTabs == 1 ? "tab" : "tabs"
+        } & ${numChords} chords`;
+      } else if (numTabs) {
+        return `View ${numTabs} ${numTabs == 1 ? "tab" : "tabs"}`;
+      } else {
+        return `View ${numChords} chords`;
+      }
+    },
+    async getUserSavedTracks() {
       //  get list of saved tracks from spotify
-      let spotifySavedTracks = (
-        await spotify.getUserSavedTracks(
-          JSON.parse(localStorage.token).access_token
-        )
-      ).items;
+      let spotifySavedTracks = await spotify.getUserSavedTracks(
+        JSON.parse(localStorage.token).access_token
+      );
 
       // send list of saved track spotify ids to mongodb and return the ones that are tabbed
       let mongoSearchResults = await this.user.functions.matchSavedTracks(
         spotifySavedTracks.map((track) => track.track.id)
       );
 
-      console.log({ spotifySavedTracks });
-      console.log({ mongoSearchResults });
+      // console.log({ spotifySavedTracks });
+      // console.log({ mongoSearchResults });
 
-      // filter spotify saved tracks to only include those that are on mongodb
-      let tabbedSavedTracks = spotifySavedTracks.filter((track) => {
-        return mongoSearchResults
-          .map((track) => track.spotifyId)
-          .includes(track.track.id);
-      });
+      // filter spotify saved tracks to only include those that are on mongodb then attach mongodb data to spotify tracks
+      let tabbedSavedTracks = spotifySavedTracks
+        .filter((track) => {
+          return mongoSearchResults
+            .map((track) => track.spotifyId)
+            .includes(track.track.id);
+        })
+        .map((spotifyTrack) => {
+          return {
+            ...spotifyTrack,
+            ...mongoSearchResults.find(
+              (mongoTrack) => mongoTrack.spotifyId == spotifyTrack.track.id
+            ),
+          };
+        });
 
       // push it to data variable
       this.tabbedSavedTracks = tabbedSavedTracks;
+      console.log(tabbedSavedTracks);
       // push it to local storage
       localStorage.tabbedSavedTracks = JSON.stringify(tabbedSavedTracks);
     },
   },
   async created() {
-    console.log(
-      JSON.parse(localStorage.tabbedSavedTracks)
-        .slice(38, 42)
-        .map((track) => {
-          return {
-            id: track.track.id,
-            artists: track.track.artists,
-            url: track.track.album.images[0].url,
-            name: track.track.name,
-          };
-        })
-    );
     /////////////create mongo db client
     const app = new App({ id: "boptabs-wwrqq" });
     const credentials = Credentials.anonymous();
     const user = await app.logIn(credentials);
     this.user = user;
     /////////////create mongo db client
-
-    // create spotify token (non-user specific)
-    // await this.$store.dispatch("setCurrentToken");
 
     if (
       localStorage.tabbedSavedTracks &&

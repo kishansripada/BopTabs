@@ -115,7 +115,7 @@
       </div>
     </section>
 
-    <section class="">
+    <section class="pt-5">
       <div class="container px-5">
         <div
           class="
@@ -145,10 +145,10 @@
       </div>
     </section>
 
-    <footer class="bg-black text-center py-5">
-      <div class="container px-5">
+    <footer class="bg-black text-center py-5 mt-5">
+      <div class="px-5">
         <div class="text-white-50 small">
-          <div class="mb-2">&copy; Bop Tabs 2022. All Rights Reserved.</div>
+          <div class="">&copy; Bop Tabs 2022. All Rights Reserved.</div>
         </div>
       </div>
     </footer>
