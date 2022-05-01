@@ -1,6 +1,6 @@
 <template>
   <div
-    class="container d-flex p-0 shadow-lg rounded-3 mt-4 position-relative"
+    class="container d-flex p-0 shadow rounded-3 mt-4 position-relative"
     style="height: 100px"
   >
     <img

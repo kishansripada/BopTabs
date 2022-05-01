@@ -5,8 +5,8 @@
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
-          viewBox="0 0 158.28 138.74"
-          width="60"
+          viewBox="0 0 158.28 120"
+          width="80"
         >
           <defs>
             <clipPath id="clip-path" transform="translate(-5.68 -6.81)">

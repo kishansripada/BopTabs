@@ -2,14 +2,21 @@
   <div class="container mt-4">
     <div class="row row-cols-1 row-cols-md-8 g-4">
       <div class="col" v-for="(beat, index) in chords" :key="index">
-        <div class="card" v-on:click="changePosition(beat)">
+        <div
+          class="card"
+          v-on:click="changePosition(beat)"
+          :style="[
+            index == currentBar
+              ? { border: 'solid black 3px' }
+              : { background: '#FFF' },
+          ]"
+        >
           <div>
             <button
               type="button"
               style="height: 35px; width: 80x"
               :class="{
                 btn: true,
-                'btn-warning': index == currentBar,
               }"
             >
               {{ beat.chord }}

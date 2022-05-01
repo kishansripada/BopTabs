@@ -99,6 +99,18 @@ export default {
     },
   },
   async created() {
+    console.log(
+      JSON.parse(localStorage.tabbedSavedTracks)
+        .slice(38, 42)
+        .map((track) => {
+          return {
+            id: track.track.id,
+            artists: track.track.artists,
+            url: track.track.album.images[0].url,
+            name: track.track.name,
+          };
+        })
+    );
     /////////////create mongo db client
     const app = new App({ id: "boptabs-wwrqq" });
     const credentials = Credentials.anonymous();
@@ -127,3 +139,4 @@ export default {
   },
 };
 </script>
+
