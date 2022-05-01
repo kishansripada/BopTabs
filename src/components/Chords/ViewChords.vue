@@ -14,7 +14,7 @@
           <div>
             <button
               type="button"
-              style="height: 35px; width: 80x"
+              style="height: 35px; width: 100%"
               :class="{
                 btn: true,
               }"

@@ -109,15 +109,6 @@
             >
           </li>
 
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#"
-              ><router-link
-                style="text-decoration: none; color: black"
-                to="/track/284fVGdbsPtigjjI0jmKXo/tabs"
-                >About</router-link
-              ></a
-            >
-          </li>
           <router-link
             style="text-decoration: none; color: black"
             to="/mylibrary"

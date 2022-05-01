@@ -4,6 +4,13 @@
     <router-view />
     <Login />
     <WebPlayback v-if="loggedIn" />
+    <footer class="bg-black text-center py-5 mt-5">
+      <div class="px-5">
+        <div class="text-white-50 small">
+          <div class="">&copy; Bop Tabs 2022. All Rights Reserved.</div>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 <script>

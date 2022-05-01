@@ -152,31 +152,40 @@ export default {
     },
   },
   methods: {
+    login() {
+      let scope = [
+        "streaming",
+        "user-read-email",
+        "user-read-private",
+        "user-library-read",
+      ].join(" ");
+      window.location.href =
+        "https://accounts.spotify.com/authorize?" +
+        encode({
+          response_type: "code",
+          client_id: "29110b23f6d14d67856438c2504dd2c4",
+          scope: scope,
+          redirect_uri: window.location.origin,
+          // state: "state",
+        });
+    },
     showAddingPopup() {
       if (JSON.parse(localStorage.token || null)?.user) {
         // if logged in show popup
         this.$store.commit("setIsAdding", true);
       } else {
         // otherwise sign them into spotify
-        let scope = [
-          "streaming",
-          "user-read-email",
-          "user-read-private",
-          "user-library-read",
-        ].join(" ");
-        window.location.href =
-          "https://accounts.spotify.com/authorize?" +
-          encode({
-            response_type: "code",
-            client_id: "29110b23f6d14d67856438c2504dd2c4",
-            scope: scope,
-            redirect_uri: window.location.origin,
-            // state: "state",
-          });
+        this.login();
       }
     },
     setWritingChords(state) {
-      this.$store.commit("setIsWritingChords", state);
+      if (JSON.parse(localStorage.token || null)?.user) {
+        // if logged in show popup
+        this.$store.commit("setIsWritingChords", state);
+      } else {
+        // otherwise sign them into spotify
+        this.login();
+      }
     },
   },
 };

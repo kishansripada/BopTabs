@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="d-flex">
-      <p class="fs-1 mt-3" style="">Tabbed Tracks</p>
+      <p class="fs-1 mt-3" style="">My Tabbed or Chorded Songs</p>
 
       <button
         type="button"
