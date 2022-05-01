@@ -12,7 +12,7 @@
       </button>
     </div>
 
-    <div class="list-group" style="width: auto">
+    <div class="list-group" style="width: auto" v-if="tabbedSavedTracks.length">
       <div v-for="track in tabbedSavedTracks" :key="track.track.id">
         <router-link
           style="text-decoration: none; color: black"
@@ -47,6 +47,7 @@
         >
       </div>
     </div>
+    <h3 v-else>Oh no looks like we don't have any of your liked tracks 😢</h3>
   </div>
 </template>
 <script>
@@ -70,8 +71,9 @@ export default {
 
   methods: {
     tabsOrChords(track) {
-      let numTabs = track.tabs.filter((tab) => tab.approved).length;
-      let numChords = track.chords.filter((chords) => chords.approved).length;
+      let numTabs = (track.tabs.filter((tab) => tab.approved) || 0).length;
+      let numChords = (track.chords.filter((chords) => chords.approved) || 0)
+        .length;
 
       if (numTabs && numChords) {
         return `View ${numTabs} ${
